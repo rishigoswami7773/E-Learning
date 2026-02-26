@@ -1,15 +1,165 @@
+@model IEnumerable<Project_BD.Models.Course>
+
 @{
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
     ViewData["Title"] = "Course Approval";
 }
 
-<div class="dashboard-container">
-    <h1>Course Approval</h1>
-    <p style="color: #6b7280; margin-bottom: 30px;">Review and approve new course submissions.</p>
+<div class="content-header animate-fade-in">
+    <h1>Course Approval Queue</h1>
+    <p>Review and moderate submitted courses to maintain platform quality standards.</p>
+</div>
 
-    <div style="background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); padding: 40px; text-align: center;">
-        <div style="font-size: 50px; margin-bottom: 20px;">✅</div>
-        <h3>No Pending Approvals</h3>
-        <p style="color: #6b7280;">Great job! All submitted courses have been reviewed.</p>
+<div class="stats-grid animate-fade-in" style="animation-delay: 0.1s;">
+    <div class="stat-card">
+        <div>
+            <div class="stat-label">Pending Review</div>
+            <div class="stat-value">@Model.Count()</div>
+            <div class="stat-trend trend-down">Action Required</div>
+        </div>
+        <div class="stat-icon-box" style="background: #fff7ed; color: #ea580c;">
+            <i class="fas fa-clock-rotate-left"></i>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div>
+            <div class="stat-label">Review Capacity</div>
+            <div class="stat-value">High</div>
+            <div class="stat-trend trend-up">All systems go</div>
+        </div>
+        <div class="stat-icon-box bg-blue">
+            <i class="fas fa-guage-high"></i>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div>
+            <div class="stat-label">Avg. Review Time</div>
+            <div class="stat-value">4.2h</div>
+            <div class="stat-trend trend-up">Fast performance</div>
+        </div>
+        <div class="stat-icon-box bg-green">
+            <i class="fas fa-bolt-lightning"></i>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div>
+            <div class="stat-label">Quality Score</div>
+            <div class="stat-value">98%</div>
+            <div class="stat-trend trend-up">Platform health</div>
+        </div>
+        <div class="stat-icon-box bg-indigo">
+            <i class="fas fa-shield-heart"></i>
+        </div>
     </div>
 </div>
+
+<div class="animate-fade-in" style="animation-delay: 0.2s;">
+    <h3 style="margin-bottom: 20px; font-weight: 800; color: var(--text-main); font-size: 20px;">Queue Items</h3>
+
+    @if (Model != null && Model.Any())
+    {
+        foreach (var course in Model)
+        {
+            <div class="card-section" style="margin-bottom: 24px; display: grid; grid-template-columns: 1fr auto; gap: 32px; align-items: start;">
+                <div style="display: flex; gap: 32px; align-items: start;">
+                    @if (!string.IsNullOrEmpty(course.ThumbnailUrl))
+                    {
+                        <div style="flex-shrink: 0; width: 220px; height: 140px; border-radius: 16px; overflow: hidden; border: 1px solid var(--border-color); box-shadow: var(--card-shadow);">
+                            <img src="@course.ThumbnailUrl" style="width: 100%; height: 100%; object-fit: cover;" alt="@course.Title" />
+                        </div>
+                    }
+                    <div style="flex: 1;">
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+                            <h4 style="font-size: 20px; font-weight: 800; color: var(--text-main);">@course.Title</h4>
+                            <span class="badge badge-warning">Awaiting Approval</span>
+                        </div>
+                        <div style="display: flex; gap: 20px; font-size: 13px; color: var(--text-muted); margin-bottom: 16px; font-weight: 600;">
+                            <span><i class="far fa-user" style="color: var(--primary);"></i> Instructor ID: @course.CourseId</span>
+                            <span><i class="far fa-folder-open" style="color: var(--primary);"></i> @(course.Category?.Name ?? "General")</span>
+                            <span><i class="far fa-calendar-check" style="color: var(--primary);"></i> Submitted Today</span>
+                        </div>
+                        <p style="font-size: 15px; color: var(--text-muted); margin-bottom: 24px; line-height: 1.6;">
+                            @course.Description
+                        </p>
+                        <div style="display: flex; gap: 12px; align-items: center;">
+                            <span style="background: #f1f5f9; color: var(--text-main); padding: 8px 16px; border-radius: 10px; font-size: 13px; font-weight: 700; border: 1px solid var(--border-color);">
+                                Pricing: <span style="color: var(--primary);">$@course.Price</span>
+                            </span>
+                            <span style="background: #f1f5f9; color: var(--text-main); padding: 8px 16px; border-radius: 10px; font-size: 13px; font-weight: 700; border: 1px solid var(--border-color);">
+                                Duration: <span style="color: var(--primary);">Self-Paced</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 12px; min-width: 180px;">
+                    <a asp-controller="Course" asp-action="Details" asp-route-id="@course.CourseId"
+                        style="text-align: center; text-decoration: none; background: white; border: 1px solid var(--border-color); padding: 12px; border-radius: 12px; font-weight: 700; color: var(--text-main); transition: var(--transition); font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px;"
+                        onmouseover="this.style.background='#f8fafc'; this.style.borderColor='var(--primary)'"
+                        onmouseout="this.style.background='white'; this.style.borderColor='var(--border-color)'">
+                        <i class="far fa-eye"></i> Full Preview
+                    </a>
+
+                    <form asp-action="ApproveCourse" method="post" style="margin: 0;">
+                        <input type="hidden" name="id" value="@course.CourseId" />
+                        <button type="submit"
+                            style="width: 100%; border: none; background: var(--success); color: white; padding: 12px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: var(--transition); font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);">
+                            <i class="fas fa-check"></i> Approve Course
+                        </button>
+                    </form>
+
+                    <form asp-action="RejectCourse" method="post" style="margin: 0;">
+                        <input type="hidden" name="id" value="@course.CourseId" />
+                        <button type="submit"
+                            style="width: 100%; border: none; background: #fee2e2; color: var(--danger); padding: 12px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: var(--transition); font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                            <i class="fas fa-trash-can"></i> Reject
+                        </button>
+                    </form>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div style="text-align: center; padding: 80px 40px; background: white; border-radius: 24px; border: 2px dashed var(--border-color);">
+            <div style="width: 80px; height: 80px; background: #ecfdf5; color: var(--success); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; font-size: 32px;">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h3 style="font-size: 24px; font-weight: 800; color: var(--text-main); margin-bottom: 8px;">Queue is Empty!</h3>
+            <p style="color: var(--text-muted); font-size: 16px;">There are no courses waiting for review at this time. Great job!</p>
+        </div>
+    }
+</div>
+
+<div class="card-section animate-fade-in"
+    style="margin-top: 40px; animation-delay: 0.3s; background: linear-gradient(135deg, white 0%, #f8faff 100%);">
+    <h3 style="margin-bottom: 24px; font-size: 18px; font-weight: 800; display: flex; align-items: center; gap: 10px;">
+        <i class="fas fa-circle-info" style="color: var(--primary);"></i> Review Guidelines
+    </h3>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 48px;">
+        <div>
+            <h5
+                style="color: var(--success); margin-bottom: 16px; font-weight: 800; font-size: 15px; display: flex; align-items: center; gap: 8px;">
+                <i class="fas fa-circle-check"></i> Standard Approval
+            </h5>
+            <ul style="font-size: 14px; color: var(--text-muted); line-height: 2; padding-left: 20px;">
+                <li>Content is original and of high educational value</li>
+                <li>Clear learning objectives and well-defined modules</li>
+                <li>Professional quality audio/video materials</li>
+                <li>Accurate categorization and descriptive tags</li>
+            </ul>
+        </div>
+        <div>
+            <h5
+                style="color: var(--danger); margin-bottom: 16px; font-weight: 800; font-size: 15px; display: flex; align-items: center; gap: 8px;">
+                <i class="fas fa-circle-xmark"></i> Grounds for Rejection
+            </h5>
+            <ul style="font-size: 14px; color: var(--text-muted); line-height: 2; padding-left: 20px;">
+                <li>Plagiarized content or copyright violations</li>
+                <li>Broken links, missing videos, or incomplete data</li>
+                <li>Poor presentation quality or misleading titles</li>
+                <li>Violation of platform community standards</li>
+            </ul>
+        </div>
+    </div>
+</div>
+

@@ -20,7 +20,7 @@ namespace Project_BD.Models
         public string Password { get; set; }
 
         [Required]
-        public string Role { get; set; } // Admin / Student / Instructor
+        public string? Role { get; set; } // Admin / Student / Instructor
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 

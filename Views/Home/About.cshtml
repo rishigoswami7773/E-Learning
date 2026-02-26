@@ -1,0 +1,110 @@
+@{
+    ViewData["Title"] = "About Us";
+}
+
+<style>
+    .about-hero {
+        background: linear-gradient(rgba(37, 99, 235, 0.9), rgba(37, 99, 235, 0.9)), url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80');
+        background-size: cover;
+        background-position: center;
+        color: white;
+        padding: 100px 8%;
+        text-align: center;
+    }
+
+    .about-hero h1 {
+        font-size: 48px;
+        margin-bottom: 20px;
+        font-weight: 800;
+    }
+
+    .about-section {
+        padding: 80px 8%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 60px;
+        align-items: center;
+    }
+
+    .about-content h2 {
+        font-size: 32px;
+        color: #1e293b;
+        margin-bottom: 24px;
+        font-weight: 700;
+    }
+
+    .about-content p {
+        color: #64748b;
+        line-height: 1.8;
+        font-size: 16px;
+        margin-bottom: 20px;
+    }
+
+    .about-image img {
+        width: 100%;
+        border-radius: 24px;
+        box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+    }
+
+    .stats-container {
+        background: white;
+        padding: 60px 8%;
+        display: flex;
+        justify-content: space-around;
+        text-align: center;
+    }
+
+    .stat-box h3 {
+        font-size: 40px;
+        color: #2563eb;
+        margin-bottom: 10px;
+        font-weight: 800;
+    }
+
+    .stat-box p {
+        color: #64748b;
+        font-weight: 600;
+    }
+</style>
+
+<div class="about-hero">
+    <h1>Our Mission is to Unlock Human Potential</h1>
+    <p style="max-width: 700px; margin: 0 auto; font-size: 18px; opacity: 0.9;">We believe that education is the most
+        powerful weapon which you can use to change the world.</p>
+</div>
+
+<div class="about-section">
+    <div class="about-image">
+        <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+            alt="Team working">
+    </div>
+    <div class="about-content">
+        <h2>Changing the Way the World Learns</h2>
+        <p>Founded in 2024, E-Learning was built with the vision of making professional education accessible to
+            everyone, everywhere. We bridge the gap between academic theory and industry reality.</p>
+        <p>Our platform brings together world-class instructors and ambitious learners in a dynamic, interactive
+            environment that fosters growth and innovation.</p>
+        <a asp-controller="Course" asp-action="Index" class="btn-primary"
+            style="text-decoration: none; display: inline-block; padding: 12px 24px; background: #2563eb; color: white; border-radius: 8px; font-weight: 700; margin-top: 10px;">Explore
+            Our Courses</a>
+    </div>
+</div>
+
+<div class="stats-container">
+    <div class="stat-box">
+        <h3>10k+</h3>
+        <p>Active Students</p>
+    </div>
+    <div class="stat-box">
+        <h3>500+</h3>
+        <p>Expert Mentors</p>
+    </div>
+    <div class="stat-box">
+        <h3>200+</h3>
+        <p>Premium Courses</p>
+    </div>
+    <div class="stat-box">
+        <h3>95%</h3>
+        <p>Success Rate</p>
+    </div>
+</div>

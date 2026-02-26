@@ -1,0 +1,161 @@
+@model IEnumerable<Project_BD.Models.Course>
+
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Platform Catalog";
+}
+
+<div class="content-header animate-fade-in">
+    <h1>Platform Catalog</h1>
+    <p>Manage, audit, and curate the educational content available to your learners.</p>
+</div>
+
+<div class="stats-grid animate-fade-in" style="animation-delay: 0.1s;">
+    <div class="stat-card">
+        <div>
+            <div class="stat-label">Total Assets</div>
+            <div class="stat-value">@Model.Count()</div>
+            <div class="stat-trend trend-up">Active Courses</div>
+        </div>
+        <div class="stat-icon-box bg-blue">
+            <i class="fas fa-layer-group"></i>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div>
+            <div class="stat-label">Enrollment Rate</div>
+            <div class="stat-value">84%</div>
+            <div class="stat-trend trend-up">User conversion</div>
+        </div>
+        <div class="stat-icon-box bg-green">
+            <i class="fas fa-user-plus"></i>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div>
+            <div class="stat-label">Portfolio Value</div>
+            <div class="stat-value">$12.5k</div>
+            <div class="stat-trend trend-up">Current Market Value</div>
+        </div>
+        <div class="stat-icon-box bg-orange">
+            <i class="fas fa-vault"></i>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div>
+            <div class="stat-label">Catalog Health</div>
+            <div class="stat-value">Good</div>
+            <div class="stat-trend trend-up">Normal activity</div>
+        </div>
+        <div class="stat-icon-box bg-indigo">
+            <i class="fas fa-heart-pulse"></i>
+        </div>
+    </div>
+</div>
+
+<div class="card-section animate-fade-in" style="animation-delay: 0.2s; padding: 0; overflow: hidden;">
+    <div class="section-header" style="padding: 30px 30px 20px;">
+        <h3>Course Directory</h3>
+        <div style="display: flex; gap: 16px;">
+             <div style="position: relative;">
+                <i class="fas fa-filter" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 13px;"></i>
+                <select style="padding: 10px 16px 10px 40px; border: 1px solid var(--border-color); border-radius: 12px; font-size: 14px; background: #f8fafc; outline: none; appearance: none; cursor: pointer; min-width: 150px; font-weight: 600; color: var(--text-main);">
+                    <option>All Categories</option>
+                    <option>Development</option>
+                    <option>Design</option>
+                </select>
+            </div>
+            <a asp-controller="Course" asp-action="Create"
+                style="background: var(--sidebar-active-bg); color: white; text-decoration: none; padding: 10px 20px; border-radius: 12px; font-weight: 700; display: flex; align-items: center; gap: 8px; font-size: 14px; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);">
+                <i class="fas fa-plus"></i> Launch Course
+            </a>
+        </div>
+    </div>
+
+    <div style="overflow-x: auto;">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Asset Detail</th>
+                    <th>Classification</th>
+                    <th>Pricing</th>
+                    <th>Visibility</th>
+                    <th style="text-align: right;">Operations</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var course in Model)
+                {
+                    <tr>
+                        <td>
+                            <div class="user-cell">
+                                @if (!string.IsNullOrEmpty(course.ThumbnailUrl))
+                                {
+                                    <img src="@course.ThumbnailUrl" style="width: 44px; height: 44px; border-radius: 10px; object-fit: cover; border: 1px solid var(--border-color);" alt="@course.Title" />
+                                }
+                                else
+                                {
+                                    <div style="width: 44px; height: 44px; background: var(--primary-light-bg); color: var(--primary); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; border: 1px solid var(--border-color);">
+                                        <i class="fas fa-book-open"></i>
+                                    </div>
+                                }
+                                <div>
+                                    <div style="font-weight: 800; color: var(--text-main); font-size: 15px;">@course.Title</div>
+                                    <div style="font-size: 12px; color: var(--text-muted); line-height: 1.4; max-width: 300px;">
+                                        @(string.IsNullOrEmpty(course.Description) ? "Strategic content for modern learners." : (course.Description.Length > 60 ? course.Description.Substring(0, 60) + "..." : course.Description))
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge badge-student" style="font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">
+                                <i class="fas fa-folder-open" style="font-size: 10px; margin-right: 4px;"></i> @(course.Category?.Name ?? "Unassigned")
+                            </span>
+                        </td>
+                        <td style="font-weight: 800; color: var(--text-main); font-size: 15px;">$@course.Price</td>
+                        <td>
+                            @if (course.IsApproved)
+                            {
+                                <span class="badge badge-success"><div style="width: 6px; height: 6px; background: currentColor; border-radius: 50%;"></div> Published</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-instructor" style="background: #fff7ed; color: #c2410c;"><div style="width: 6px; height: 6px; background: currentColor; border-radius: 50%;"></div> Pending Approval</span>
+                            }
+                        </td>
+                        <td style="text-align: right;">
+                            <div style="display: flex; gap: 4px; justify-content: flex-end;">
+                                <a asp-controller="Course" asp-action="Details" asp-route-id="@course.CourseId"
+                                   style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 10px; color: var(--text-muted); transition: var(--transition);"
+                                   onmouseover="this.style.background='#f1f5f9'; this.style.color='var(--primary)'" onmouseout="this.style.background='transparent'; this.style.color='var(--text-muted)'">
+                                    <i class="fas fa-arrow-up-right-from-square"></i>
+                                </a>
+                                <a asp-controller="Course" asp-action="Edit" asp-route-id="@course.CourseId"
+                                   style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 10px; color: var(--text-muted); transition: var(--transition);"
+                                   onmouseover="this.style.background='#f1f5f9'; this.style.color='var(--primary)'" onmouseout="this.style.background='transparent'; this.style.color='var(--text-muted)'">
+                                    <i class="fas fa-pen-to-square"></i>
+                                </a>
+                                <a asp-controller="Course" asp-action="Delete" asp-route-id="@course.CourseId"
+                                   style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 10px; color: var(--text-muted); transition: var(--transition);"
+                                   onmouseover="this.style.background='#fee2e2'; this.style.color='var(--danger)'" onmouseout="this.style.background='transparent'; this.style.color='var(--text-muted)'">
+                                    <i class="fas fa-trash-can"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    
+    <div style="padding: 20px 30px; background: #f8fafc; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+        <div style="font-size: 13px; color: var(--text-muted); font-weight: 600;">
+            Catalog Integrity Verified • @DateTime.Now.ToString("MMM yyyy")
+        </div>
+        <div style="display: flex; gap: 8px;">
+            <button style="padding: 8px 16px; border: 1px solid var(--border-color); border-radius: 10px; background: white; font-size: 13px; font-weight: 700; color: var(--text-muted); cursor: not-allowed;">Prev</button>
+            <button style="padding: 8px 16px; border: 1px solid var(--border-color); border-radius: 10px; background: white; font-size: 13px; font-weight: 700; color: var(--text-muted); cursor: not-allowed;">Next</button>
+        </div>
+    </div>
+</div>
+

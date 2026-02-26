@@ -1,56 +1,58 @@
 ﻿@* <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Project_BD</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/Project_BD.styles.css" asp-append-version="true" />
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>@ViewData["Title"] - Project_BD</title>
+<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/Project_BD.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Project_BD</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        @* <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li> *@
+<header>
+<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+<div class="container-fluid">
+<a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Project_BD</a>
+<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
+aria-controls="navbarSupportedContent"
+aria-expanded="false" aria-label="Toggle navigation">
+<span class="navbar-toggler-icon"></span>
+</button>
+<div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+<ul class="navbar-nav flex-grow-1">
+<li class="nav-item">
+<a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+</li>
+@* <li class="nav-item">
+<a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+</li> *@
 
-@*                     </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+@* </ul>
+</div>
+</div>
+</nav>
+</header>
+<div class="container">
+<main role="main" class="pb-3">
+@RenderBody()
+</main>
+</div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - Project_BD - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+<footer class="border-top footer text-muted">
+<div class="container">
+&copy; 2026 - Project_BD - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+</div>
+</footer>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+@await RenderSectionAsync("Scripts", required: false)
 </body>
-</html> *@ 
+</html> *@
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -73,32 +75,54 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 8%;
+            padding: 16px 8%;
             background: white;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
 
         .logo {
-            font-weight: bold;
-            font-size: 20px;
+            font-weight: 800;
+            font-size: 22px;
+            color: #1e293b;
+            letter-spacing: -0.5px;
         }
 
         .nav-links {
             list-style: none;
             display: flex;
-            gap: 25px;
+            gap: 32px;
+            align-items: center;
         }
 
         .nav-links a {
             text-decoration: none;
-            color: #333;
-            font-weight: 500;
+            color: #475569;
+            font-weight: 600;
+            font-size: 15px;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: #2563eb;
         }
 
         .profile-btn {
-            padding: 8px 15px;
-            background: #f1f1f1;
-            border-radius: 6px;
+            padding: 10px 20px;
+            background: #2563eb;
+            color: white !important;
+            border-radius: 10px;
+            font-weight: 700 !important;
+            box-shadow: 0 4px 6px -1px rgb(37 99 235 / 0.2);
+            transition: all 0.2s;
+        }
+
+        .profile-btn:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+            box-shadow: 0 10px 15px -3px rgb(37 99 235 / 0.3);
         }
 
         /* Hero */
@@ -169,7 +193,7 @@
             padding: 30px;
             border-radius: 12px;
             width: 300px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
         }
 
         .icon {
@@ -207,23 +231,97 @@
 
 <body>
 
-    <!-- Navbar -->
     <nav class="navbar">
         <div class="logo">🎓 E-Learning</div>
-        <ul class="nav-links">
+        <ul class="nav-links" style="align-items: center;">
             <li><a asp-controller="Home" asp-action="Index">Home</a></li>
             <li><a asp-controller="Course" asp-action="Index">Courses</a></li>
-            <li><a asp-controller="Admin" asp-action="Dashboard">Admin Panel</a></li>
-            <li><a href="#" class="profile-btn">Profile</a></li>
+            <li><a asp-controller="Home" asp-action="About">About</a></li>
+            
+            @if (Context.Session.GetInt32("UserId") != null)
+            {
+                @if (Context.Session.GetString("UserRole") == "Admin")
+                {
+                    <li><a asp-controller="Admin" asp-action="Dashboard" style="color: #2563eb; font-weight: 700;">Admin Panel</a></li>
+                }
+                else
+                {
+                    <li><a asp-controller="Student" asp-action="Dashboard" style="color: #2563eb; font-weight: 700;">My Dashboard</a></li>
+                }
+
+                <li style="display: flex; align-items: center; gap: 12px; padding: 6px 14px; background: #f8fafc; border-radius: 50px; border: 1px solid #e2e8f0; margin-left: 10px;">
+                    <div style="width: 32px; height: 32px; background: #2563eb; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px;">
+                        @(Context.Session.GetString("UserName")?.Substring(0, 1).ToUpper() ?? "U")
+                    </div>
+                    <div style="display: flex; flex-direction: column;">
+                        <span style="font-size: 13px; font-weight: 700; color: #1e293b; line-height: 1;">@Context.Session.GetString("UserName")</span>
+                        <a asp-controller="Users" asp-action="Logout" style="color: #ef4444; font-size: 10px; font-weight: 800; text-decoration: none; text-transform: uppercase; margin-top: 2px;">Logout</a>
+                    </div>
+                </li>
+            }
+            else
+            {
+                <li><a asp-controller="Home" asp-action="Contact">Contact</a></li>
+                <li><a asp-controller="Users" asp-action="Login" class="profile-btn">Sign In / Register</a></li>
+            }
         </ul>
     </nav>
 
     @RenderBody()
 
     <!-- Footer -->
-    <footer>
-        <p>© 2026 E-Learning Platform. All rights reserved.</p>
+    <footer style="background: #0f172a; padding: 80px 8% 40px; color: white;">
+        <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 60px;">
+            <div>
+                <div class="logo" style="color: white; margin-bottom: 20px;">🎓 E-Learning</div>
+                <p style="color: #94a3b8; line-height: 1.6; font-size: 14px; max-width: 300px;">
+                    Empowering learners worldwide with high-quality, industry-relevant professional education.
+                </p>
+                <div style="display: flex; gap: 15px; margin-top: 25px;">
+                    <a href="#" style="color: #94a3b8; font-size: 20px;"><i class="fab fa-facebook"></i></a>
+                    <a href="#" style="color: #94a3b8; font-size: 20px;"><i class="fab fa-twitter"></i></a>
+                    <a href="#" style="color: #94a3b8; font-size: 20px;"><i class="fab fa-linkedin"></i></a>
+                    <a href="#" style="color: #94a3b8; font-size: 20px;"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            <div>
+                <h4 style="font-size: 16px; font-weight: 700; margin-bottom: 25px;">Platform</h4>
+                <ul style="list-style: none; padding: 0;">
+                    <li style="margin-bottom: 12px;"><a asp-controller="Course" asp-action="Index"
+                            style="color: #94a3b8; text-decoration: none; font-size: 14px;">Browse Courses</a></li>
+                    <li style="margin-bottom: 12px;"><a href="#"
+                            style="color: #94a3b8; text-decoration: none; font-size: 14px;">Instructors</a></li>
+                    <li style="margin-bottom: 12px;"><a href="#"
+                            style="color: #94a3b8; text-decoration: none; font-size: 14px;">Certificates</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 style="font-size: 16px; font-weight: 700; margin-bottom: 25px;">Company</h4>
+                <ul style="list-style: none; padding: 0;">
+                    <li style="margin-bottom: 12px;"><a asp-controller="Home" asp-action="About"
+                            style="color: #94a3b8; text-decoration: none; font-size: 14px;">About Us</a></li>
+                    <li style="margin-bottom: 12px;"><a asp-controller="Home" asp-action="Contact"
+                            style="color: #94a3b8; text-decoration: none; font-size: 14px;">Contact Us</a></li>
+                    <li style="margin-bottom: 12px;"><a asp-controller="Home" asp-action="Privacy"
+                            style="color: #94a3b8; text-decoration: none; font-size: 14px;">Privacy Policy</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 style="font-size: 16px; font-weight: 700; margin-bottom: 25px;">Support</h4>
+                <ul style="list-style: none; padding: 0;">
+                    <li style="margin-bottom: 12px;"><a asp-controller="Home" asp-action="FAQ"
+                            style="color: #94a3b8; text-decoration: none; font-size: 14px;">Help Center</a></li>
+                    <li style="margin-bottom: 12px;"><a href="#"
+                            style="color: #94a3b8; text-decoration: none; font-size: 14px;">Status</a></li>
+                </ul>
+            </div>
+        </div>
+        <div
+            style="border-top: 1px solid #1e293b; padding-top: 30px; text-align: center; color: #64748b; font-size: 14px;">
+            <p>© @DateTime.Now.Year E-Learning Platform. All rights reserved.</p>
+        </div>
     </footer>
 
 </body>
+
 </html>

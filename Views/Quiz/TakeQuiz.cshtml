@@ -1,0 +1,120 @@
+@model Project_BD.Models.Quiz
+
+@{
+    ViewData["Title"] = "Quiz: " + Model.Title;
+}
+
+<style>
+    .quiz-container {
+        padding: 40px 8%;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .quiz-card {
+        background: white;
+        padding: 40px;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    }
+
+    .quiz-header {
+        text-align: center;
+        margin-bottom: 40px;
+        border-bottom: 2px solid #f3f4f6;
+        padding-bottom: 20px;
+    }
+
+    .quiz-header h1 {
+        font-size: 28px;
+        color: #111827;
+        margin-bottom: 10px;
+    }
+
+    .question-box {
+        margin-bottom: 35px;
+    }
+
+    .question-text {
+        font-size: 18px;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 20px;
+        display: block;
+    }
+
+    .option-item {
+        margin-bottom: 12px;
+        padding: 15px;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .option-item:hover {
+        background: #f9fafb;
+        border-color: #2b59ff;
+    }
+
+    .option-item input[type="radio"] {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+    }
+
+    .btn-submit-quiz {
+        width: 100%;
+        padding: 15px;
+        background: #2b59ff;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 18px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
+        margin-top: 20px;
+    }
+
+    .btn-submit-quiz:hover {
+        background: #1e40af;
+        transform: translateY(-2px);
+    }
+</style>
+
+<div class="quiz-container">
+    <div class="quiz-card">
+        <div class="quiz-header">
+            <span style="color: #6b7280; text-transform: uppercase; font-size: 12px; font-weight: bold;">Final Assessment</span>
+            <h1>@Model.Title</h1>
+            <p>Course: @Model.Course?.Title</p>
+        </div>
+
+        <form asp-action="SubmitQuiz" method="post">
+            <input type="hidden" name="quizId" value="@Model.QuizId" />
+
+            @{ int qNum = 1; }
+            @foreach (var question in Model.Questions)
+            {
+                <div class="question-box">
+                    <span class="question-text">@qNum. @question.QuestionText</span>
+                    
+                    @foreach (var option in question.Options)
+                    {
+                        <label class="option-item">
+                            <input type="radio" name="question_@question.QuestionId" value="@option.OptionId" required>
+                            <span>@option.OptionText</span>
+                        </label>
+                    }
+                </div>
+                qNum++;
+            }
+
+            <button type="submit" class="btn-submit-quiz">Submit Quiz & View Marks</button>
+        </form>
+    </div>
+</div>

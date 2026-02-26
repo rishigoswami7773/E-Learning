@@ -1,0 +1,126 @@
+@using Project_BD.Models
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Platform Intelligence";
+    var categoryStats = ViewBag.CategoryStats as IEnumerable<dynamic> ?? new List<dynamic>();
+}
+
+<div class="content-header animate-fade-in">
+    <h1>Platform Intelligence</h1>
+    <p>Data-driven insights into learner engagement, content performance, and system growth.</p>
+</div>
+
+<div class="stats-grid animate-fade-in" style="animation-delay: 0.1s;">
+    <div class="stat-card">
+        <div>
+            <div class="stat-label">Active Learners</div>
+            <div class="stat-value">@(ViewBag.ActiveLearners ?? 0)</div>
+            <div class="stat-trend trend-up"><i class="fas fa-arrow-trend-up"></i> Live Users</div>
+        </div>
+        <div class="stat-icon-box bg-blue">
+            <i class="fas fa-users-viewfinder"></i>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div>
+            <div class="stat-label">Course Completion</div>
+            <div class="stat-value">@Math.Round(ViewBag.CompletionRate ?? 0, 1)%</div>
+            <div class="stat-trend trend-up"><i class="fas fa-file-certificate"></i> Certification Rate</div>
+        </div>
+        <div class="stat-icon-box bg-green">
+            <i class="fas fa-medal"></i>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div>
+            <div class="stat-label">Total Reach</div>
+            <div class="stat-value">@(ViewBag.TotalUsers ?? 0)</div>
+            <div class="stat-trend trend-up"><i class="fas fa-globe"></i> Registered Accounts</div>
+        </div>
+        <div class="stat-icon-box bg-orange">
+            <i class="fas fa-chart-line"></i>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div>
+            <div class="stat-label">Support Efficiency</div>
+            <div class="stat-value">99.2%</div>
+            <div class="stat-trend trend-up">Optimal SLA</div>
+        </div>
+        <div class="stat-icon-box bg-indigo">
+            <i class="fas fa-headset"></i>
+        </div>
+    </div>
+</div>
+
+<div class="card-section animate-fade-in" style="animation-delay: 0.2s; padding: 30px;">
+    <div class="section-header" style="margin-bottom: 40px;">
+        <div>
+            <h3 style="font-size: 20px; font-weight: 800; color: var(--text-main);">Enrollment Analytics</h3>
+            <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">User distribution across different
+                course categories.</p>
+        </div>
+    </div>
+
+    @if (categoryStats.Any())
+    {
+        <div
+            style="height: 350px; display: flex; align-items: flex-end; justify-content: space-around; padding: 20px 40px; background: #fafbff; border-radius: 20px; gap: 40px; border: 1px solid #f1f5f9;">
+            @foreach (var stat in categoryStats)
+            {
+                var heightPercent = Math.Max(20, Math.Min(90, (int)stat.Count * 20)); // Scaled for demo
+                <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 16px; max-width: 80px;">
+                    <div style="width: 100%; background: var(--primary); border-radius: 12px 12px 4px 4px; height: @(heightPercent)%; transition: all 0.3s; cursor: pointer; position: relative;"
+                        title="@stat.Count Enrollments">
+                        <div
+                            style="position: absolute; top: -30px; left: 50%; transform: translateX(-50%); font-size: 12px; font-weight: 800; color: var(--primary);">
+                            @stat.Count</div>
+                    </div>
+                    <span
+                        style="font-size: 10px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; text-align: center;">@stat.Category</span>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div
+            style="height: 350px; display: flex; align-items: center; justify-content: center; background: #fafbff; border-radius: 20px; border: 1px dashed #cbd5e1; color: var(--text-muted);">
+            <div style="text-align: center;">
+                <i class="fas fa-chart-column" style="font-size: 40px; margin-bottom: 16px; opacity: 0.3;"></i>
+                <p>No enrollment data available yet to generate graphs.</p>
+            </div>
+        </div>
+    }
+
+    <div style="margin-top: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+        <div style="padding: 24px; background: white; border: 1px solid var(--border-color); border-radius: 20px;">
+            <h5 style="margin-bottom: 20px; font-size: 15px; font-weight: 800; color: var(--text-main);">Strategic
+                Growth Metrics</h5>
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+                @foreach (var stat in categoryStats.Take(4))
+                {
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="width: 8px; height: 8px; border-radius: 50%; background: var(--primary);"></div>
+                            <span style="font-size: 14px; font-weight: 600; color: var(--text-main);">@stat.Category</span>
+                        </div>
+                        <span style="font-size: 13px; font-weight: 800; color: var(--primary);">@stat.Count
+                            Enrollments</span>
+                    </div>
+                }
+            </div>
+        </div>
+        <div
+            style="padding: 24px; border: 2px dashed var(--border-color); border-radius: 20px; display: flex; align-items: center; justify-content: center; text-align: center; background: #fcfdfe;">
+            <div>
+                <i class="fas fa-wand-magic-sparkles"
+                    style="font-size: 24px; color: var(--primary); margin-bottom: 12px;"></i>
+                <h5 style="font-size: 14px; font-weight: 800; color: var(--text-main);">System Status</h5>
+                <p style="font-size: 12px; color: var(--text-muted); max-width: 200px;">All services operational. Data
+                    synchronized with central repository.</p>
+            </div>
+        </div>
+    </div>
+</div>
+

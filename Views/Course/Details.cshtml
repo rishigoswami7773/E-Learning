@@ -15,7 +15,7 @@
         background: white;
         padding: 40px;
         border-radius: 16px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
         display: flex;
         gap: 40px;
         margin-bottom: 40px;
@@ -131,20 +131,56 @@
 
 <div class="course-details-container">
     <div class="course-hero">
-        <div class="course-hero-img">📘</div>
+        <div class="course-hero-img">
+            @if (!string.IsNullOrEmpty(Model.ThumbnailUrl))
+            {
+                <img src="@Model.ThumbnailUrl" alt="@Model.Title"
+                    style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;" />
+            }
+            else
+            {
+                <span>📘</span>
+            }
+        </div>
         <div class="course-hero-content">
-            <span class="category-badge">@(Model.Category?.Name ?? "General")</span>
+            <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 20px;">
+                <span class="category-badge" style="margin-bottom: 0;">@(Model.Category?.Name ?? "General")</span>
+                @if (ViewBag.UserRole == "Admin")
+                {
+                    <span class="category-badge" style="background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; margin-bottom: 0;">
+                        <i class="fas fa-shield-halved"></i> Admin Privileged Access
+                    </span>
+                }
+            </div>
             <h1>@Model.Title</h1>
             <p style="color: #4b5563; font-size: 18px;">@Model.Description</p>
-            <div class="course-price-large">$@Model.Price</div>
-            <button class="btn-enroll">Enroll Now</button>
+            @if (ViewBag.IsEnrolled)
+            {
+                <div style="display: flex; gap: 10px; align-items: center; margin-top: 20px;">
+                    <span
+                        style="color: #059669; font-weight: bold; background: #d1fae5; padding: 10px 20px; border-radius: 8px;">✓
+                        @(ViewBag.UserRole == "Admin" ? "Full Access Granted" : "Enrolled")</span>
+                    @if (Model.Quizzes != null && Model.Quizzes.Any())
+                    {
+                        <a asp-controller="Quiz" asp-action="TakeQuiz" asp-route-id="@Model.Quizzes.First().QuizId"
+                            class="btn-enroll" style="background: #059669; text-decoration: none;">Take Course Quiz</a>
+                    }
+                </div>
+            }
+            else
+            {
+                <form asp-action="Enroll" method="post" style="margin-top: 20px;">
+                    <input type="hidden" name="courseId" value="@Model.CourseId" />
+                    <button type="submit" class="btn-enroll">Enroll Now</button>
+                </form>
+            }
         </div>
     </div>
 
     <div class="course-main-content">
         <div class="syllabus-section">
             <h2>Course Syllabus</h2>
-            
+
             @if (Model.Modules != null && Model.Modules.Any())
             {
                 foreach (var module in Model.Modules)
@@ -160,8 +196,19 @@
                                 foreach (var lesson in module.Lessons)
                                 {
                                     <div class="lesson-item">
-                                        <span class="lesson-icon">▶</span>
-                                        <span>@lesson.LessonTitle</span>
+                                        <span class="lesson-icon">@(ViewBag.IsEnrolled ? "▶" : "🔒")</span>
+                                        @if (ViewBag.IsEnrolled)
+                                        {
+                                            <a asp-action="WatchLesson" asp-route-id="@lesson.LessonId"
+                                                style="text-decoration: none; color: inherit;">@lesson.LessonTitle</a>
+                                            <a asp-action="WatchLesson" asp-route-id="@lesson.LessonId"
+                                                style="margin-left: auto; font-size: 12px; color: #2b59ff; text-decoration: none;">Watch</a>
+                                        }
+                                        else
+                                        {
+                                            <span style="color: #9ca3af;">@lesson.LessonTitle</span>
+                                            <span style="margin-left: auto; font-size: 12px; color: #9ca3af;">Locked</span>
+                                        }
                                     </div>
                                 }
                             }
@@ -180,13 +227,33 @@
         </div>
 
         <div class="sidebar-section">
-            <div style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+            <div
+                style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
                 <h3 style="margin-bottom: 20px; font-size: 18px;">Course Info</h3>
-                <ul style="list-style: none; color: #4b5563; font-size: 14px;">
+                <ul style="list-style: none; color: #4b5563; font-size: 14px; margin-bottom: 20px;">
                     <li style="margin-bottom: 10px;">🕒 Full lifetime access</li>
                     <li style="margin-bottom: 10px;">📱 Access on mobile and TV</li>
                     <li style="margin-bottom: 10px;">📜 Certificate of completion</li>
                 </ul>
+
+                @if (ViewBag.IsEnrolled)
+                {
+                    if (Model.Quizzes != null && Model.Quizzes.Any())
+                    {
+                        <a asp-controller="Quiz" asp-action="TakeQuiz" asp-route-id="@Model.Quizzes.First().QuizId"
+                            class="btn-enroll"
+                            style="display: block; text-align: center; text-decoration: none; background: #059669;">Take Final Quiz</a>
+                    }
+                    else
+                    {
+                        <button class="btn-enroll"
+                            style="display: block; width: 100%; background: #9ca3af; cursor: not-allowed;" disabled>No Quiz Available</button>
+                    }
+                }
+                else
+                {
+                    <p style="font-size: 14px; text-align: center; color: #6b7280; border-top: 1px solid #eee; pt-3; mt-3;">Enroll to access course content and quizzes.</p>
+                }
             </div>
         </div>
     </div>

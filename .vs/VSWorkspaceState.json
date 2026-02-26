@@ -1,8 +1,10 @@
 {
   "ExpandedNodes": [
     "",
-    "\\Database"
+    "\\Database",
+    "\\Views",
+    "\\Views\\Admin"
   ],
-  "SelectedNode": "\\Database\\E_db.cs",
+  "SelectedNode": "\\Views\\Admin\\Dashboard.cshtml",
   "PreviewInSolutionExplorer": false
 }

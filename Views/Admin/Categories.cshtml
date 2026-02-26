@@ -1,0 +1,99 @@
+@model IEnumerable<Project_BD.Models.Category>
+
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Categories";
+}
+
+<div class="content-header animate-fade-in">
+    <h1>Content Categories</h1>
+    <p>Structure your platform by organizing courses into logical categories and sub-topics.</p>
+</div>
+
+<div class="card-section animate-fade-in" style="animation-delay: 0.1s; padding: 0; overflow: hidden;">
+    <div class="section-header" style="padding: 30px 30px 20px;">
+        <h3>Platform Categories (@Model.Count())</h3>
+        <a asp-action="CreateCategory"
+            style="background: var(--sidebar-active-bg); color: white; text-decoration: none; padding: 10px 20px; border-radius: 12px; font-weight: 700; display: flex; align-items: center; gap: 8px; font-size: 14px; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);">
+            <i class="fas fa-plus"></i> New Category
+        </a>
+    </div>
+
+    <div style="overflow-x: auto;">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th style="width: 250px;">Category Information</th>
+                    <th>Course Classification & Description</th>
+                    <th style="text-align: right; width: 150px;">Control Panel</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div
+                                    style="width: 50px; height: 50px; background: #eef2ff; color: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800; border: 1px solid #e0e7ff; overflow: hidden;">
+                                    @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                    {
+                                        <img src="@item.ImageUrl" style="width: 100%; height: 100%; object-fit: cover;"
+                                            alt="@item.Name" />
+                                    }
+                                    else
+                                    {
+                                        @item.Name.Substring(0, 1).ToUpper()
+                                    }
+                                </div>
+                                <div>
+                                    <div style="font-weight: 800; color: var(--text-main); font-size: 15px;">@item.Name
+                                    </div>
+                                    <div
+                                        style="font-size: 11px; color: var(--primary); font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">
+                                        Active Filter</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div style="color: var(--text-muted); font-size: 14px; line-height: 1.5; max-width: 600px;">
+                                @(string.IsNullOrEmpty(item.Description) ? "No description provided for this category." :
+                                    item.Description)
+                            </div>
+                        </td>
+                        <td style="text-align: right;">
+                            <div style="display: flex; gap: 8px; justify-content: flex-end;">
+                                <a asp-action="EditCategory" asp-route-id="@item.CategoryId"
+                                    style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 10px; color: var(--text-muted); transition: var(--transition); border: 1px solid var(--border-color); background: white;"
+                                    onmouseover="this.style.borderColor='var(--primary)'; this.style.color='var(--primary)'; this.style.transform='translateY(-2px)'"
+                                    onmouseout="this.style.borderColor='var(--border-color)'; this.style.color='var(--text-muted)'; this.style.transform='translateY(0)'">
+                                    <i class="fas fa-pen-nib"></i>
+                                </a>
+                                <form asp-action="DeleteCategory" asp-route-id="@item.CategoryId" method="post"
+                                    onsubmit="return confirm('Are you sure? This action will impact all courses tagged with this category.');"
+                                    style="display: inline; margin: 0;">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit"
+                                        style="width: 40px; height: 40px; background: white; border: 1px solid #fee2e2; border-radius: 10px; color: var(--danger); cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center;"
+                                        onmouseover="this.style.background='#fee2e2'; this.style.transform='translateY(-2px)'"
+                                        onmouseout="this.style.background='white'; this.style.transform='translateY(0)'">
+                                        <i class="fas fa-trash-can"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div
+        style="padding: 24px 30px; background: #f8fafc; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-start; align-items: center; gap: 20px;">
+        <div
+            style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-muted); font-weight: 600; background: white; padding: 6px 14px; border-radius: 100px; border: 1px solid var(--border-color);">
+            <i class="fas fa-info-circle"></i> Organize your content effectively for better discoverability.
+        </div>
+    </div>
+</div>
+

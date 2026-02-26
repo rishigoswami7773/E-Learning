@@ -1,172 +1,203 @@
 @{
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
-    ViewData["Title"] = "Admin Dashboard";
+    ViewData["Title"] = "Dashboard";
 }
 
-<style>
-    .dashboard-container {
-        padding: 30px;
-    }
-
-    .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-        gap: 25px;
-        margin-bottom: 40px;
-    }
-
-    .stat-card {
-        background: white;
-        padding: 25px;
-        border-radius: 12px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        display: flex;
-        align-items: center;
-        gap: 20px;
-    }
-
-    .stat-icon {
-        width: 50px;
-        height: 50px;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 24px;
-    }
-
-    .blue { background: #e0e7ff; color: #4338ca; }
-    .green { background: #dcfce7; color: #15803d; }
-    .orange { background: #ffedd5; color: #9a3412; }
-    .purple { background: #f3e8ff; color: #7e22ce; }
-
-    .stat-info h3 {
-        font-size: 14px;
-        color: #6b7280;
-        margin-bottom: 5px;
-    }
-
-    .stat-info p {
-        font-size: 24px;
-        font-weight: bold;
-        color: #111827;
-    }
-
-    .recent-activity {
-        background: white;
-        padding: 25px;
-        border-radius: 12px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    }
-
-    .recent-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
-    }
-
-    .recent-header h2 {
-        font-size: 18px;
-        color: #111827;
-    }
-
-    .activity-list {
-        list-style: none;
-    }
-
-    .activity-item {
-        display: flex;
-        align-items: center;
-        padding: 15px 0;
-        border-bottom: 1px solid #f3f4f6;
-    }
-
-    .activity-item:last-child {
-        border-bottom: none;
-    }
-
-    .activity-img {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: #e5e7eb;
-        margin-right: 15px;
-    }
-
-    .activity-details p {
-        font-size: 14px;
-        color: #111827;
-    }
-
-    .activity-details span {
-        font-size: 12px;
-        color: #6b7280;
-    }
-</style>
-
-<div class="dashboard-container">
-    <h1>Overview</h1>
-    <p style="color: #6b7280; margin-bottom: 30px;">Welcome back, Admin! Here's what's happening today.</p>
-
-    <div class="stats-grid">
-        <div class="stat-card">
-            <div class="stat-icon blue">👥</div>
-            <div class="stat-info">
-                <h3>Total Students</h3>
-                <p>1,284</p>
+<!-- Stats Grid -->
+<div class="stats-grid">
+    <div class="stat-card animate-fade-in" style="animation-delay: 0.1s;">
+        <div class="stat-header">
+            <div class="stat-icon-wrapper" style="background: #eff6ff; color: #3b82f6;">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-trend-tag tag-up">
+                <i class="fas fa-arrow-up"></i> 12%
             </div>
         </div>
-        <div class="stat-card">
-            <div class="stat-icon green">📚</div>
-            <div class="stat-info">
-                <h3>Active Courses</h3>
-                <p>42</p>
+        <div class="stat-label">Total Users</div>
+        <div class="stat-value">@(ViewBag.TotalUsers ?? "0")</div>
+    </div>
+
+    <div class="stat-card animate-fade-in" style="animation-delay: 0.2s;">
+        <div class="stat-header">
+            <div class="stat-icon-wrapper" style="background: #f0fdf4; color: #10b981;">
+                <i class="fas fa-book-open"></i>
+            </div>
+            <div class="stat-trend-tag tag-up">
+                <i class="fas fa-arrow-up"></i> 8%
             </div>
         </div>
-        <div class="stat-card">
-            <div class="stat-icon orange">💰</div>
-            <div class="stat-info">
-                <h3>Revenue</h3>
-                <p>$12,450</p>
+        <div class="stat-label">Active Courses</div>
+        <div class="stat-value">@(ViewBag.TotalCourses ?? "0")</div>
+    </div>
+
+    <div class="stat-card animate-fade-in" style="animation-delay: 0.3s;">
+        <div class="stat-header">
+            <div class="stat-icon-wrapper" style="background: #fff7ed; color: #f59e0b;">
+                <i class="fas fa-dollar-sign"></i>
+            </div>
+            <div class="stat-trend-tag tag-up">
+                <i class="fas fa-arrow-up"></i> 24%
             </div>
         </div>
-        <div class="stat-card">
-            <div class="stat-icon purple">🎓</div>
-            <div class="stat-info">
-                <h3>Certificates</h3>
-                <p>156</p>
-            </div>
+        <div class="stat-label">Total Revenue</div>
+        <div class="stat-value">$@(ViewBag.TotalRevenue != null ? ((decimal)ViewBag.TotalRevenue).ToString("N0") : "0")
         </div>
     </div>
 
-    <div class="recent-activity">
-        <div class="recent-header">
-            <h2>Recent Enrolments</h2>
-            <a href="#" style="color: #2b59ff; text-decoration: none; font-size: 14px;">View All</a>
+    <div class="stat-card animate-fade-in" style="animation-delay: 0.4s;">
+        <div class="stat-header">
+            <div class="stat-icon-wrapper" style="background: #eef2ff; color: #6366f1;">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="stat-trend-tag tag-up">
+                <i class="fas fa-arrow-up"></i> 15%
+            </div>
         </div>
-        <ul class="activity-list">
-            <li class="activity-item">
-                <div class="activity-img"></div>
-                <div class="activity-details">
-                    <p><strong>John Doe</strong> enrolled in <strong>Full Stack Web Dev</strong></p>
-                    <span>2 minutes ago</span>
+        <div class="stat-label">Enrollments</div>
+        <div class="stat-value">@(ViewBag.TotalEnrollments ?? "0")</div>
+    </div>
+</div>
+
+<!-- System Alerts -->
+<div class="list-card animate-fade-in" style="animation-delay: 0.5s;">
+    <div class="card-header">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="width: 8px; height: 8px; background: #3b82f6; border-radius: 50%;"></div>
+            <h3>System Status & Alerts</h3>
+        </div>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0;">
+        <div class="alert-item" style="background: #fffbeb; color: #92400e; border: 1px solid #fde68a;">
+            <i class="fas fa-triangle-exclamation"></i>
+            <span>@(ViewBag.PendingCourses?.Count ?? 0) courses awaiting review</span>
+        </div>
+        <div class="alert-item" style="background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe;">
+            <i class="fas fa-envelope"></i>
+            <span>@(ViewBag.UnreadContactCount ?? 0) new inquiries in Mail Manager</span>
+        </div>
+    </div>
+</div>
+
+<!-- Main Sections -->
+<div class="dashboard-grid animate-fade-in" style="animation-delay: 0.6s;">
+    <!-- Approvals -->
+    <div class="list-card">
+        <div class="card-header">
+            <h3>Pending Approvals</h3>
+            <a asp-action="CourseApproval" class="btn-view-all">Manage All</a>
+        </div>
+        <div class="item-list">
+            @if (ViewBag.PendingCourses != null && ((IEnumerable<dynamic>)ViewBag.PendingCourses).Any())
+            {
+                foreach (var course in ViewBag.PendingCourses)
+                {
+                    <div class="list-item">
+                        <div class="item-main">
+                            @if (!string.IsNullOrEmpty(course.ThumbnailUrl))
+                            {
+                                <img src="@course.ThumbnailUrl"
+                                    style="width: 48px; height: 48px; border-radius: 12px; object-fit: cover; border: 1px solid var(--border-color);"
+                                    alt="@course.Title" />
+                            }
+                            else
+                            {
+                                <div class="item-icon">
+                                    <i class="fas fa-graduation-cap"></i>
+                                </div>
+                            }
+                            <div class="item-info">
+                                <h4>@course.Title</h4>
+                                <p>@course.Category?.Name • Waiting for review</p>
+                            </div>
+                        </div>
+                        <div class="item-actions">
+                            <form asp-action="ApproveCourse" asp-route-id="@course.CourseId" method="post" style="margin:0;">
+                                <button type="submit" class="btn-action" style="background: #d1fae5; color: #059669;"
+                                    title="Approve">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                            </form>
+                            <form asp-action="RejectCourse" asp-route-id="@course.CourseId" method="post" style="margin:0;">
+                                <button type="submit" class="btn-action" style="background: #fee2e2; color: #dc2626;"
+                                    title="Reject">
+                                    <i class="fas fa-xmark"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div style="padding: 40px; text-align: center; color: var(--text-muted);">
+                    <i class="fas fa-check-circle"
+                        style="font-size: 32px; color: #10b981; margin-bottom: 12px; display: block;"></i>
+                    <p style="font-weight: 600;">All courses caught up!</p>
                 </div>
-            </li>
-            <li class="activity-item">
-                <div class="activity-img"></div>
-                <div class="activity-details">
-                    <p><strong>Jane Smith</strong> enrolled in <strong>Advanced React Patterns</strong></p>
-                    <span>1 hour ago</span>
+            }
+        </div>
+    </div>
+
+    <!-- Registrations -->
+    <div class="list-card">
+        <div class="card-header">
+            <h3>New Members</h3>
+            <a asp-action="ManageUsers" class="btn-view-all">Directory</a>
+        </div>
+        <div class="item-list">
+            @if (ViewBag.RecentUsers != null && ((IEnumerable<dynamic>)ViewBag.RecentUsers).Any())
+            {
+                foreach (var user in ViewBag.RecentUsers)
+                {
+                    <div class="list-item">
+                        <div class="item-main">
+                            <div class="item-icon" style="background: var(--primary-light-bg); color: var(--primary);">
+                                @((user.Name ?? "U").Substring(0, 1).ToUpper())
+                            </div>
+                            <div class="item-info">
+                                <h4>@user.Name</h4>
+                                <p>@user.Role</p>
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <span
+                                class="badge @(user.Role == "Instructor" ? "badge-instructor" : "badge-student")">@user.Role</span>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div style="padding: 40px; text-align: center; color: var(--text-muted);">
+                    <p>No recent registrations.</p>
                 </div>
-            </li>
-            <li class="activity-item">
-                <div class="activity-img"></div>
-                <div class="activity-details">
-                    <p><strong>Mike Ross</strong> enrolled in <strong>Python for Data Science</strong></p>
-                    <span>3 hours ago</span>
-                </div>
-            </li>
-        </ul>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="animate-fade-in" style="animation-delay: 0.7s;">
+    <h3
+        style="font-size: 20px; font-weight: 800; margin-bottom: 24px; color: var(--text-main); letter-spacing: -0.5px;">
+        Quick Management</h3>
+    <div class="quick-actions-bar">
+        <a asp-controller="Admin" asp-action="Courses" class="action-link">
+            <i class="fas fa-book"></i>
+            <span>Courses</span>
+        </a>
+        <a asp-action="ManageUsers" class="action-link">
+            <i class="fas fa-users"></i>
+            <span>Users</span>
+        </a>
+        <a asp-action="Analytics" class="action-link">
+            <i class="fas fa-chart-line"></i>
+            <span>Analytics</span>
+        </a>
+        <a asp-action="Settings" class="action-link">
+            <i class="fas fa-cog"></i>
+            <span>Settings</span>
+        </a>
     </div>
 </div>

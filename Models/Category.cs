@@ -9,11 +9,12 @@ namespace Project_BD.Models
 
         [Required]
         [StringLength(100)]
-        public string CategoryName { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         [Required]
-        public string Description { get; set; }
+        public string Description { get; set; } = string.Empty;
 
+        public string? ImageUrl { get; set; }
         public ICollection<Course>? Courses { get; set; }
     }
 }

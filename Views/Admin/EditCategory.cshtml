@@ -1,0 +1,95 @@
+@model Project_BD.Models.Category
+
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Taxonomy Modification";
+}
+
+<div class="content-header animate-fade-in">
+    <h1>Taxonomy Modification</h1>
+    <p>Refining the classification attributes for <strong>@Model.Name</strong>.</p>
+</div>
+
+<div style="display: flex; justify-content: center; margin-top: 40px;" class="animate-fade-in"
+    style="animation-delay: 0.1s;">
+    <div class="card-section" style="width: 100%; max-width: 600px; padding: 40px;">
+        <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 32px;">
+            <div
+                style="width: 48px; height: 48px; background: #fff7ed; color: #ea580c; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px;">
+                <i class="fas fa-folder-gear"></i>
+            </div>
+            <div>
+                <h3 style="font-size: 20px; font-weight: 800; color: var(--text-main);">Node Parameters</h3>
+                <p style="font-size: 13px; color: var(--text-muted);">Update naming and descriptive scope for this node.
+                </p>
+            </div>
+        </div>
+
+        <form asp-action="EditCategory" method="post" enctype="multipart/form-data">
+            <input type="hidden" asp-for="CategoryId" />
+            <input type="hidden" asp-for="ImageUrl" />
+            <div asp-validation-summary="ModelOnly"
+                style="color: var(--danger); font-size: 13px; font-weight: 700; background: #fef2f2; padding: 12px; border-radius: 10px; margin-bottom: 24px;">
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 24px;">
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <label asp-for="Name"
+                        style="font-size: 13px; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Classification
+                        Name</label>
+                    <input asp-for="Name"
+                        style="padding: 14px 18px; border: 1px solid var(--border-color); border-radius: 12px; font-weight: 600; background: #f8fafc; outline: none; transition: var(--transition);"
+                        onfocus="this.style.borderColor='var(--primary)'; this.style.background='white'" />
+                    <span asp-validation-for="Name"
+                        style="color: var(--danger); font-size: 11px; font-weight: 700;"></span>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <label asp-for="Description"
+                        style="font-size: 13px; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Scope
+                        Description</label>
+                    <textarea asp-for="Description" rows="4"
+                        style="padding: 14px 18px; border: 1px solid var(--border-color); border-radius: 12px; font-weight: 600; background: #f8fafc; outline: none; transition: var(--transition); resize: none;"
+                        onfocus="this.style.borderColor='var(--primary)'; this.style.background='white'"></textarea>
+                    <span asp-validation-for="Description"
+                        style="color: var(--danger); font-size: 11px; font-weight: 700;"></span>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <label
+                        style="font-size: 13px; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Category
+                        Image</label>
+                    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                    {
+                        <div style="margin-bottom: 12px;">
+                            <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 4px;">Current Metadata
+                                Graphic:</p>
+                            <img src="@Model.ImageUrl"
+                                style="width: 100px; height: 60px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border-color);" />
+                        </div>
+                    }
+                    <input type="file" name="image" accept="image/*"
+                        style="padding: 12px; border: 1px dashed var(--border-color); border-radius: 12px; font-size: 13px; background: #f8fafc;" />
+                    <p style="font-size: 11px; color: var(--text-muted); margin: 0;">Upload a new image to replace the
+                        existing asset.</p>
+                </div>
+
+                <div style="display: flex; gap: 16px; margin-top: 8px;">
+                    <button type="submit"
+                        style="flex: 2; background: var(--sidebar-active-bg); color: white; border: none; padding: 16px; border-radius: 14px; font-weight: 800; font-size: 15px; cursor: pointer; transition: var(--transition); box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);"
+                        onmouseover="this.style.transform='translateY(-2px)'"
+                        onmouseout="this.style.transform='translateY(0)'">
+                        Commit Changes
+                    </button>
+                    <a asp-action="Categories"
+                        style="flex: 1; text-align: center; text-decoration: none; background: white; border: 1px solid var(--border-color); color: var(--text-muted); padding: 16px; border-radius: 14px; font-weight: 800; font-size: 15px; transition: var(--transition);"
+                        onmouseover="this.style.background='#f8fafc'; this.style.color='var(--text-main)'"
+                        onmouseout="this.style.background='white'; this.style.color='var(--text-muted)'">
+                        Abort
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+

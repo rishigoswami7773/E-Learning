@@ -26,7 +26,11 @@ namespace Project_BD.Models
         [ForeignKey("CategoryId")]
         public Category? Category { get; set; }
 
+        public string? ThumbnailUrl { get; set; }
+        public bool IsApproved { get; set; } = false;
+
         public ICollection<Module>? Modules { get; set; }
         public ICollection<Enrollment>? Enrollments { get; set; }
+        public ICollection<Quiz>? Quizzes { get; set; }
     }
 }

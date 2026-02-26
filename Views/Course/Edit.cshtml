@@ -11,7 +11,7 @@
         padding: 40px;
         background: white;
         border-radius: 12px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
     }
 
     .form-header {
@@ -89,9 +89,10 @@
         <p style="color: #6b7280;">Update your course information</p>
     </div>
 
-    <form asp-action="Edit">
+    <form asp-action="Edit" enctype="multipart/form-data">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <input type="hidden" asp-for="CourseId" />
+        <input type="hidden" asp-for="ThumbnailUrl" />
 
         <div class="form-group">
             <label asp-for="Title"></label>
@@ -113,9 +114,22 @@
 
         <div class="form-group">
             <label asp-for="CategoryId">Category</label>
-            <select asp-for="CategoryId" class="form-control" asp-items="@(new SelectList(ViewBag.Categories, "CategoryId", "Name"))">
+            <select asp-for="CategoryId" class="form-control"
+                asp-items="@(new SelectList(ViewBag.Categories, "CategoryId", "Name"))">
             </select>
             <span asp-validation-for="CategoryId" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label>Update Course Thumbnail</label>
+            @if (!string.IsNullOrEmpty(Model.ThumbnailUrl))
+            {
+                <div style="margin-bottom: 15px;">
+                    <img src="@Model.ThumbnailUrl" alt="Course Thumbnail"
+                        style="max-width: 200px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />
+                </div>
+            }
+            <input type="file" name="thumbnail" class="form-control" accept="image/*" />
         </div>
 
         <button type="submit" class="btn-submit">Update Course</button>
@@ -125,5 +139,7 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

@@ -1,32 +1,116 @@
 ﻿<!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
     <meta charset="utf-8" />
-    <title>Admin Panel</title>
-    <link rel="stylesheet" href="~/css/admin.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Admin Panel</title>
+    <!-- Modern Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Robust Iconography -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+    <!-- Critical Theme Variables (Inline fallback) -->
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --sidebar-bg: #111827;
+            --sidebar-text: #9ca3af;
+            --bg-main: #f3f4f6;
+            --text-main: #111827;
+            --border-color: #e5e7eb;
+        }
+    </style>
+
+    <!-- Main Stylesheet with Cache Busting -->
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
 </head>
+
 <body>
 
     <div class="admin-container">
-
+        <!-- Sidebar Navigation -->
         <aside class="sidebar">
-            <h2>E-Learning</h2>
-            <a asp-controller="Admin" asp-action="Dashboard">Dashboard</a>
-            <a asp-controller="Admin" asp-action="ManageUsers">Manage Users</a>
-            <a asp-controller="Admin" asp-action="Instructors">Instructors</a>
-            <a asp-controller="Course" asp-action="Index">Manage Courses</a>
-            <a asp-controller="Category" asp-action="Index">Manage Categories</a>
-            <a asp-controller="Admin" asp-action="CourseApproval">Course Approval</a>
-            <a asp-controller="Admin" asp-action="Payments">Payments</a>
-            <a asp-controller="Admin" asp-action="Analytics">Analytics</a>
-            <a asp-controller="Admin" asp-action="Settings">Settings</a>
+            <div class="logo-section">
+                <div class="icon-box">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <div>
+                    <h2>E-Learning</h2>
+                    <span>Admin Panel</span>
+                </div>
+            </div>
+
+            <nav>
+                <a asp-controller="Admin" asp-action="Dashboard"
+                    class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "Dashboard" ? "active" : "")">
+                    <i class="fas fa-grip"></i> Dashboard
+                </a>
+
+                <a asp-controller="Admin" asp-action="ManageUsers"
+                    class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "ManageUsers" ? "active" : "")">
+                    <i class="fas fa-users"></i> Users
+                </a>
+                <a asp-controller="Admin" asp-action="Instructors"
+                    class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "Instructors" ? "active" : "")">
+                    <i class="fas fa-user-tie"></i> Instructors
+                </a>
+                <a asp-controller="Admin" asp-action="Courses"
+                    class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "Courses" ? "active" : "")">
+                    <i class="fas fa-book"></i> Courses
+                </a>
+                <a asp-controller="Admin" asp-action="CourseApproval"
+                    class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "CourseApproval" ? "active" : "")">
+                    <i class="fas fa-check-circle"></i> Approvals
+                </a>
+                <a asp-controller="Admin" asp-action="Payments"
+                    class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "Payments" ? "active" : "")">
+                    <i class="fas fa-wallet"></i> Payments
+                </a>
+                <a asp-controller="Admin" asp-action="Analytics"
+                    class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "Analytics" ? "active" : "")">
+                    <i class="fas fa-chart-line"></i> Analytics
+                </a>
+                <a asp-controller="Admin" asp-action="Notifications"
+                    class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "Notifications" ? "active" : "")">
+                    <i class="fas fa-bell"></i> Notifications
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a asp-controller="Users" asp-action="Logout">
+                    <i class="fas fa-arrow-right-from-bracket"></i> Sign Out
+                </a>
+            </div>
         </aside>
 
+        <!-- Content Area -->
         <main class="admin-content">
-            @RenderBody()
-        </main>
+            <header class="top-header">
+                <div class="header-left">
+                    <h1>@ViewData["Title"]</h1>
+                    <p>Overview of your e-learning ecosystem</p>
+                </div>
 
+                <div class="header-right">
+                    <div
+                        style="font-size: 12px; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">
+                        System Status: <span style="color: var(--success);">Live</span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="main-body">
+                @RenderBody()
+            </div>
+        </main>
     </div>
 
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
+
 </html>

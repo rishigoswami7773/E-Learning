@@ -1,0 +1,113 @@
+@model Project_BD.Models.Lesson
+
+@{
+    ViewData["Title"] = "Watching: " + Model.LessonTitle;
+}
+
+<style>
+    .watch-container {
+        padding: 40px 8%;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .video-wrapper {
+        position: relative;
+        padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+        height: 0;
+        overflow: hidden;
+        border-radius: 16px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+        background: #000;
+    }
+
+    .video-wrapper iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+
+    .lesson-meta {
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+
+    .lesson-meta h1 {
+        font-size: 28px;
+        color: #111827;
+        margin-bottom: 15px;
+    }
+
+    .course-breadcrumb {
+        margin-bottom: 20px;
+        font-size: 14px;
+        color: #6b7280;
+    }
+
+    .course-breadcrumb a {
+        color: #2b59ff;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .content-area {
+        margin-top: 30px;
+        line-height: 1.8;
+        color: #4b5563;
+    }
+
+    .btn-back {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 10px 20px;
+        background: #f3f4f6;
+        color: #1f2937;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: 0.3s;
+    }
+
+    .btn-back:hover {
+        background: #e5e7eb;
+    }
+</style>
+
+<div class="watch-container">
+    <div class="course-breadcrumb">
+        <a asp-action="Index">Courses</a> / 
+        <a asp-action="Details" asp-route-id="@Model.Module?.CourseId">@Model.Module?.Course?.Title</a> / 
+        <span>@Model.LessonTitle</span>
+    </div>
+
+    <div class="video-wrapper">
+        @if (!string.IsNullOrEmpty(Model.VideoUrl))
+        {
+            // Convert normal YouTube link to Embed if necessary
+            var embedUrl = Model.VideoUrl;
+            if (embedUrl.Contains("watch?v=")) {
+                embedUrl = embedUrl.Replace("watch?v=", "embed/");
+            }
+            <iframe src="@embedUrl" allowfullscreen></iframe>
+        }
+        else
+        {
+            <div style="color: white; padding: 20%; text-align: center;">Video URL not provided for this lesson.</div>
+        }
+    </div>
+
+    <div class="lesson-meta">
+        <h1>@Model.LessonTitle</h1>
+        <div class="content-area">
+            @Model.Content
+        </div>
+        
+        <a asp-action="Details" asp-route-id="@Model.Module?.CourseId" class="btn-back">← Back to Course Syllabus</a>
+    </div>
+</div>

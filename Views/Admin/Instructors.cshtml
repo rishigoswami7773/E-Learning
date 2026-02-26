@@ -1,33 +1,136 @@
-﻿@{
+﻿@model IEnumerable<Project_BD.Models.User>
+
+@{
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
     ViewData["Title"] = "Instructors";
 }
 
-<style>
-    .instructors-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 25px;
-    }
-</style>
+<div class="content-header animate-fade-in">
+    <h1>Faculty Management</h1>
+    <p>Monitor and support your platform's educators and subject matter experts.</p>
+</div>
 
-<div class="dashboard-container">
-    <h1>Instructors</h1>
-    <p style="color: #6b7280; margin-bottom: 30px;">Manage your teaching staff.</p>
-
-    <div class="instructors-grid">
-        <div class="instructor-card">
-            <div class="instructor-img" style="background: #e5e7eb; display: flex; align-items: center; justify-content: center; font-size: 30px;">👨‍🏫</div>
-            <h3>Sarah Johnson</h3>
-            <p>12 Courses</p>
-            <button style="margin-top:10px; padding: 5px 15px; border: 1px solid #2b59ff; color: #2b59ff; background: transparent; border-radius: 5px; cursor: pointer;">View Profile</button>
+<div class="stats-grid animate-fade-in" style="animation-delay: 0.1s;">
+    <div class="stat-card">
+        <div>
+            <div class="stat-label">Total Experts</div>
+            <div class="stat-value">@Model.Count()</div>
+            <div class="stat-trend trend-up">Teaching Staff</div>
         </div>
-
-        <div class="instructor-card">
-            <div class="instructor-img" style="background: #e5e7eb; display: flex; align-items: center; justify-content: center; font-size: 30px;">👩‍🏫</div>
-            <h3>Dr. Robert Smith</h3>
-            <p>8 Courses</p>
-            <button style="margin-top:10px; padding: 5px 15px; border: 1px solid #2b59ff; color: #2b59ff; background: transparent; border-radius: 5px; cursor: pointer;">View Profile</button>
+        <div class="stat-icon-box bg-blue">
+            <i class="fas fa-chalkboard-user"></i>
         </div>
     </div>
+    <div class="stat-card">
+        <div>
+            <div class="stat-label">Avg. Engagement</div>
+            <div class="stat-value">84%</div>
+            <div class="stat-trend trend-up">Active Response</div>
+        </div>
+        <div class="stat-icon-box bg-green">
+            <i class="fas fa-handshake-angle"></i>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div>
+            <div class="stat-label">Course Load</div>
+            <div class="stat-value">3.2</div>
+            <div class="stat-trend trend-up">Avg. courses/expert</div>
+        </div>
+        <div class="stat-icon-box bg-orange">
+            <i class="fas fa-book-bookmark"></i>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div>
+            <div class="stat-label">Instructor ROI</div>
+            <div class="stat-value">4.2x</div>
+            <div class="stat-trend trend-up">Platform Growth</div>
+        </div>
+        <div class="stat-icon-box bg-indigo">
+            <i class="fas fa-chart-pie"></i>
+        </div>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 24px; animation-delay: 0.2s;"
+    class="animate-fade-in">
+    @foreach (var instructor in Model)
+    {
+        <div class="card-section" style="padding: 24px; transition: var(--transition);"
+            onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='var(--hover-shadow)'"
+            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='var(--card-shadow)'">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
+                <div style="display: flex; gap: 16px;">
+                    <div
+                        style="width: 64px; height: 64px; border-radius: 16px; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 800; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);">
+                        @((instructor.Name ?? "I").FirstOrDefault())
+                    </div>
+                    <div>
+                        <div style="font-weight: 800; font-size: 18px; color: var(--text-main);">@instructor.Name</div>
+                        <div style="font-size: 13px; color: var(--text-muted); margin-top: 2px;">@instructor.Email</div>
+                        <div style="display: flex; gap: 6px; margin-top: 8px;">
+                            <span class="badge badge-instructor" style="font-size: 10px; padding: 2px 8px;">Verified
+                                Expert</span>
+                            <span class="badge badge-success" style="font-size: 10px; padding: 2px 8px;">Active</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; background: #f8fafc; padding: 16px; border-radius: 16px; margin-bottom: 24px; border: 1px solid var(--border-color);">
+                <div style="text-align: center;">
+                    <div style="font-weight: 800; color: var(--text-main); font-size: 16px;">12</div>
+                    <div
+                        style="font-size: 10px; color: var(--text-muted); font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">
+                        Courses</div>
+                </div>
+                <div
+                    style="text-align: center; border-left: 1px solid var(--border-color); border-right: 1px solid var(--border-color);">
+                    <div style="font-weight: 800; color: var(--text-main); font-size: 16px;">4.9</div>
+                    <div
+                        style="font-size: 10px; color: var(--text-muted); font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">
+                        Rating</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-weight: 800; color: var(--text-main); font-size: 16px;">850+</div>
+                    <div
+                        style="font-size: 10px; color: var(--text-muted); font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">
+                        Students</div>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 24px;">
+                <div
+                    style="font-size: 12px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;">
+                    Top Skills:</div>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <span
+                        style="background: white; border: 1px solid var(--border-color); color: var(--text-main); padding: 4px 12px; border-radius: 8px; font-size: 12px; font-weight: 700;">Full
+                        Stack</span>
+                    <span
+                        style="background: white; border: 1px solid var(--border-color); color: var(--text-main); padding: 4px 12px; border-radius: 8px; font-size: 12px; font-weight: 700;">System
+                        Design</span>
+                    <span
+                        style="background: white; border: 1px solid var(--border-color); color: var(--text-main); padding: 4px 12px; border-radius: 8px; font-size: 12px; font-weight: 700;">Project
+                        Mgmt</span>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 50px 1fr; gap: 12px;">
+                <button
+                    style="height: 44px; background: white; border: 1px solid var(--border-color); border-radius: 12px; color: var(--text-muted); cursor: pointer; transition: var(--transition);"
+                    onmouseover="this.style.color='var(--primary)'; this.style.borderColor='var(--primary)'"
+                    onmouseout="this.style.color='var(--text-muted)'; this.style.borderColor='var(--border-color)'">
+                    <i class="far fa-envelope"></i>
+                </button>
+                <button
+                    style="height: 44px; background: var(--sidebar-active-bg); color: white; border: none; border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer; transition: var(--transition); box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);"
+                    onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                    View Educator Profile
+                </button>
+            </div>
+        </div>
+    }
 </div>

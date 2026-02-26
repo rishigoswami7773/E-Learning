@@ -1,0 +1,150 @@
+@{
+    ViewData["Title"] = "FAQ";
+}
+
+<style>
+    .faq-wrapper {
+        padding: 80px 8%;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    .faq-header {
+        text-align: center;
+        margin-bottom: 60px;
+    }
+
+    .faq-header h1 {
+        font-size: 42px;
+        color: #1e293b;
+        font-weight: 800;
+        margin-bottom: 15px;
+    }
+
+    .faq-header p {
+        color: #64748b;
+        font-size: 18px;
+    }
+
+    .faq-item {
+        background: white;
+        border-radius: 16px;
+        margin-bottom: 20px;
+        border: 1px solid #e2e8f0;
+        overflow: hidden;
+        transition: all 0.3s;
+    }
+
+    .faq-question {
+        padding: 24px;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: 700;
+        color: #1e293b;
+        font-size: 18px;
+    }
+
+    .faq-answer {
+        padding: 0 24px 24px 24px;
+        color: #64748b;
+        line-height: 1.8;
+        display: none;
+    }
+
+    .faq-item.active {
+        border-color: #2563eb;
+        box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.05);
+    }
+
+    .faq-item.active .faq-answer {
+        display: block;
+    }
+
+    .faq-item.active .faq-question {
+        color: #2563eb;
+    }
+
+    .toggle-icon {
+        transition: transform 0.3s;
+        font-size: 14px;
+    }
+
+    .faq-item.active .toggle-icon {
+        transform: rotate(180deg);
+    }
+</style>
+
+<div class="faq-wrapper">
+    <div class="faq-header">
+        <h1>Frequently Asked Questions</h1>
+        <p>Everything you need to know about our platform and courses.</p>
+    </div>
+
+    <div class="faq-list">
+        <div class="faq-item active">
+            <div class="faq-question">
+                How do I get a certificate?
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="faq-answer">
+                Once you complete all the lessons in a course and pass the final certification quiz with at least 80%,
+                you will be able to download your certificate immediately from your student dashboard.
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                Can I access courses on my mobile?
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="faq-answer">
+                Yes! Our platform is fully responsive. You can watch lessons, take quizzes, and track your progress on
+                any smartphone or tablet.
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                Is there a time limit for completing a course?
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="faq-answer">
+                No, all our courses come with lifetime access. You can learn at your own pace and revisit the content
+                whenever you need a refresher.
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                What payment methods do you accept?
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="faq-answer">
+                We accept all major credit/debit cards (Visa, MasterCard, American Express) and popular digital payment
+                methods like PayPal.
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question">
+                Do you offer refunds?
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="faq-answer">
+                We offer a 30-day money-back guarantee for all our courses if you're not satisfied with the content, no
+                questions asked.
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.querySelectorAll('.faq-question').forEach(item => {
+        item.addEventListener('click', event => {
+            const faqItem = item.parentElement;
+            faqItem.classList.toggle('active');
+        })
+    })
+</script>

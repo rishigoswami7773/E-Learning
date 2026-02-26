@@ -1,0 +1,91 @@
+@model IEnumerable<Project_BD.Models.ContactMessage>
+
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Mail Manager";
+}
+
+<div class="content-header animate-fade-in">
+    <h1>Mail Manager</h1>
+    <p>Manage and respond to student inquiries sent via the Contact Us portal.</p>
+</div>
+
+<div class="stats-grid animate-fade-in" style="margin-top: 32px; animation-delay: 0.1s;">
+    <div class="stat-card">
+        <div class="stat-header">
+            <div class="stat-icon-wrapper" style="background: #eef2ff; color: #6366f1;">
+                <i class="fas fa-inbox"></i>
+            </div>
+        </div>
+        <div class="stat-label">Total Inquiries</div>
+        <div class="stat-value">@Model.Count()</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-header">
+            <div class="stat-icon-wrapper" style="background: #fff7ed; color: #f59e0b;">
+                <i class="fas fa-envelope-open-text"></i>
+            </div>
+        </div>
+        <div class="stat-label">Unread Messages</div>
+        <div class="stat-value">@Model.Count(m => !m.IsRead)</div>
+    </div>
+</div>
+
+<div class="list-card animate-fade-in" style="margin-top: 32px; animation-delay: 0.2s;">
+    <div class="card-header">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <i class="fas fa-list-check" style="color: var(--text-main);"></i>
+            <h3>Message Queue</h3>
+        </div>
+    </div>
+    
+    <div class="item-list" style="padding: 0 24px;">
+        @if (!Model.Any())
+        {
+            <div style="text-align: center; padding: 60px; color: var(--text-muted);">
+                <i class="fas fa-folder-open" style="font-size: 48px; margin-bottom: 20px; opacity: 0.2;"></i>
+                <h3>No messages found</h3>
+                <p>When students use the contact form, their inquiries will appear here.</p>
+            </div>
+        }
+        else
+        {
+            @foreach (var msg in Model)
+            {
+                <div class="list-item" style="flex-direction: column; align-items: flex-start; gap: 16px; padding: 24px 0;">
+                    <div style="display: flex; justify-content: space-between; width: 100%; align-items: flex-start;">
+                        <div style="display: flex; gap: 16px;">
+                            <div class="item-icon" style="background: @(msg.IsRead ? "#f3f4f6" : "#eff6ff"); color: @(msg.IsRead ? "#9ca3af" : "#2563eb"); width: 48px; height: 48px;">
+                                @msg.Name.Substring(0, 1).ToUpper()
+                            </div>
+                            <div>
+                                <h4 style="font-size: 16px; margin-bottom: 4px;">@msg.Subject</h4>
+                                <p style="font-size: 13px;">From: <strong>@msg.Name</strong> &lt;@msg.Email&gt;</p>
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <span class="badge" style="background: @(msg.IsRead ? "#f1f5f9" : "#dcfce7"); color: @(msg.IsRead ? "#475569" : "#166534"); margin-bottom: 8px;">
+                                @(msg.IsRead ? "Archived" : "New Inquiry")
+                            </span>
+                            <p style="font-size: 11px; color: var(--text-muted); font-weight: 700;">@msg.SentAt.ToString("MMM dd, yyyy - HH:mm")</p>
+                        </div>
+                    </div>
+                    
+                    <div style="background: #f8fafc; padding: 20px; border-radius: 12px; width: 100%; border: 1px solid var(--border-color);">
+                        <p style="font-size: 14px; color: #1e293b; line-height: 1.6; white-space: pre-wrap;">@msg.Message</p>
+                    </div>
+
+                    <div style="display: flex; gap: 12px; margin-top: 4px;">
+                        <a href="mailto:@msg.Email" class="action-link" style="padding: 8px 16px; border-radius: 8px; font-size: 12px; background: var(--primary); color: white; border: none;">
+                            <i class="fas fa-reply"></i> Reply via Email
+                        </a>
+                        <button class="action-link" style="padding: 8px 16px; border-radius: 8px; font-size: 12px;">
+                            <i class="fas fa-check"></i> Mark as Resolved
+                        </button>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>

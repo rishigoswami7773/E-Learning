@@ -10,7 +10,7 @@ namespace Project_BD.Models
 
         [Required]
         [StringLength(150)]
-        public string Title { get; set; }
+        public string Title { get; set; } = string.Empty;
 
         [Required]
         public int CourseId { get; set; }

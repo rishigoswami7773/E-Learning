@@ -1,0 +1,248 @@
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificate of Completion</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #f0f0f0;
+            font-family: 'Times New Roman', serif;
+        }
+
+        .cert-outer {
+            width: 1000px;
+            margin: 50px auto;
+            background: white;
+            padding: 10px;
+            border: 15px double #b45309;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.15);
+            position: relative;
+        }
+
+        .cert-inner {
+            border: 3px solid #d97706;
+            padding: 80px;
+            text-align: center;
+            background: #fffcf5;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-30deg);
+            font-size: 80px;
+            color: rgba(180, 83, 9, 0.05);
+            white-space: nowrap;
+            z-index: 0;
+            pointer-events: none;
+            font-weight: 900;
+        }
+
+        .cert-header {
+            font-size: 60px;
+            color: #78350f;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 12px;
+            font-weight: 900;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cert-sub {
+            font-size: 24px;
+            color: #4a5568;
+            margin-bottom: 40px;
+            font-style: italic;
+        }
+
+        .user-name {
+            font-size: 42px;
+            color: #111827;
+            margin: 30px 0;
+            border-bottom: 2px solid #111827;
+            display: inline-block;
+            padding: 0 40px;
+        }
+
+        .cert-text {
+            font-size: 20px;
+            color: #4b5563;
+            line-height: 1.6;
+            margin: 30px auto;
+            max-width: 700px;
+        }
+
+        .course-name {
+            font-weight: 900;
+            color: #78350f;
+            font-size: 28px;
+            margin: 15px 0;
+            text-transform: capitalize;
+        }
+
+        .marks-section {
+            margin: 40px 0;
+            font-size: 18px;
+            color: #111827;
+            position: relative;
+            z-index: 1;
+        }
+
+        .marks-badge {
+            background: #1a365d;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .cert-footer {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 60px;
+            padding: 0 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .sign-box {
+            width: 250px;
+            padding-top: 10px;
+            font-size: 14px;
+        }
+
+        .seal {
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+            width: 140px;
+            height: 140px;
+            background: linear-gradient(135deg, #f59e0b, #b45309);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+            border: 5px double rgba(255, 255, 255, 0.5);
+            transform: rotate(-15deg);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            z-index: 2;
+        }
+
+        .btn-print {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background: #111827;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        @@media print {
+            .btn-print {
+                display: none;
+            }
+
+            body {
+                background: white;
+            }
+
+            .cert-outer {
+                box-shadow: none;
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <button class="btn-print" onclick="window.print()">Print Certificate</button>
+
+    <div class="cert-outer">
+        <div class="cert-inner">
+            <div class="watermark">OFFICIAL CERTIFICATE</div>
+
+            <div style="margin-bottom: 30px;">
+                <span
+                    style="font-size: 14px; color: #b45309; letter-spacing: 3px; font-weight: bold; border: 1.5px solid #b45309; padding: 5px 15px; border-radius: 4px;">GOVERNMENT
+                    RECOGNIZED STANDARDS</span>
+            </div>
+
+            <div class="cert-header">CERTIFICATE</div>
+            <div class="cert-sub">OF ACADEMIC EXCELLENCE & COMPLETION</div>
+
+            <div class="cert-text" style="font-size: 22px; margin-top: 40px;">This prestigious award is presented to
+            </div>
+            <div class="user-name">@ViewBag.StudentName.ToUpper()</div>
+
+            <div class="cert-text">
+                For the successful and distinguished completion of the primary course in
+                <div class="course-name">@ViewBag.CourseTitle</div>
+                <div style="margin-top: 20px; font-size: 16px; color: #4b5563;">
+                    Authorized by the Academic Board of E-Learning Platform in coordination with
+                    <strong>National Skill Development Council (NSDC) Verified Standards</strong>.
+                </div>
+            </div>
+
+            <div class="marks-section">
+                <span style="color: #6b7280;">Final Assessment Result: </span>
+                <span class="marks-badge"
+                    style="background: linear-gradient(135deg, #b45309, #d97706); padding: 12px 25px; font-size: 20px;">
+                    Score: @ViewBag.Score%
+                </span>
+                <div
+                    style="margin-top: 15px; font-size: 12px; color: #92400e; font-weight: bold; text-transform: uppercase;">
+                    Certified Digital Credential - ID: #(ELE-@Guid.NewGuid().ToString().Substring(0, 8).ToUpper())
+                </div>
+            </div>
+
+            <div class="cert-footer">
+                <div class="sign-box">
+                    <img src="https://signature.freefire-name.com/img.php?f=11&t=Director%20Education" alt="Signature"
+                        style="height: 50px; margin-bottom: -10px; opacity: 0.8;" />
+                    <div style="height: 1px; background: #374151; width: 100%; margin-bottom: 5px;"></div>
+                    <strong>DIRECTOR OF ACCREDITATION</strong><br />
+                    E-Learning Regulatory Body
+                </div>
+                <div class="sign-box">
+                    <div
+                        style="height: 50px; display: flex; align-items: flex-end; justify-content: center; margin-bottom: -10px; font-family: 'Courier New', Courier, monospace; font-weight: bold; color: #1e40af;">
+                        @ViewBag.Date
+                    </div>
+                    <div style="height: 1px; background: #374151; width: 100%; margin-bottom: 5px;"></div>
+                    <strong>DATE OF ISSUANCE</strong><br />
+                    Official Record Verified
+                </div>
+            </div>
+
+            <div class="seal">
+                <div
+                    style="border: 2px solid white; width: 100%; height: 100%; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-direction: column;">
+                    <span style="font-size: 10px;">AUTHORIZED</span>
+                    <span style="font-size: 14px; font-weight: 800;">GOVT</span>
+                    <span style="font-size: 10px;">APPROVED</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
