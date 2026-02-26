@@ -1,0 +1,193 @@
+@model Project_BD.Models.Course
+
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<style>
+    .course-details-container {
+        padding: 40px 8%;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .course-hero {
+        background: white;
+        padding: 40px;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        display: flex;
+        gap: 40px;
+        margin-bottom: 40px;
+    }
+
+    .course-hero-img {
+        width: 300px;
+        height: 200px;
+        background: #2b59ff;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 60px;
+        color: white;
+    }
+
+    .course-hero-content {
+        flex: 1;
+    }
+
+    .course-hero-content h1 {
+        font-size: 36px;
+        color: #111827;
+        margin-bottom: 15px;
+    }
+
+    .category-badge {
+        display: inline-block;
+        padding: 5px 12px;
+        background: #e0e7ff;
+        color: #4338ca;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 20px;
+    }
+
+    .course-price-large {
+        font-size: 28px;
+        color: #2b59ff;
+        font-weight: bold;
+        margin: 20px 0;
+    }
+
+    .btn-enroll {
+        padding: 12px 30px;
+        background: #2b59ff;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    .course-main-content {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 40px;
+    }
+
+    .syllabus-section h2 {
+        font-size: 24px;
+        margin-bottom: 25px;
+    }
+
+    .module-card {
+        background: white;
+        border-radius: 12px;
+        margin-bottom: 15px;
+        border: 1px solid #e5e7eb;
+        overflow: hidden;
+    }
+
+    .module-header {
+        padding: 15px 20px;
+        background: #f9fafb;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+    }
+
+    .module-header h3 {
+        font-size: 16px;
+        color: #111827;
+    }
+
+    .lesson-list {
+        background: white;
+        border-top: 1px solid #e5e7eb;
+    }
+
+    .lesson-item {
+        padding: 12px 20px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        font-size: 14px;
+        color: #4b5563;
+        border-bottom: 1px solid #f3f4f6;
+    }
+
+    .lesson-item:last-child {
+        border-bottom: none;
+    }
+
+    .lesson-icon {
+        color: #2b59ff;
+    }
+</style>
+
+<div class="course-details-container">
+    <div class="course-hero">
+        <div class="course-hero-img">📘</div>
+        <div class="course-hero-content">
+            <span class="category-badge">@(Model.Category?.Name ?? "General")</span>
+            <h1>@Model.Title</h1>
+            <p style="color: #4b5563; font-size: 18px;">@Model.Description</p>
+            <div class="course-price-large">$@Model.Price</div>
+            <button class="btn-enroll">Enroll Now</button>
+        </div>
+    </div>
+
+    <div class="course-main-content">
+        <div class="syllabus-section">
+            <h2>Course Syllabus</h2>
+            
+            @if (Model.Modules != null && Model.Modules.Any())
+            {
+                foreach (var module in Model.Modules)
+                {
+                    <div class="module-card">
+                        <div class="module-header">
+                            <h3>@module.ModuleTitle</h3>
+                            <span style="color: #6b7280; font-size: 12px;">@(module.Lessons?.Count ?? 0) Lessons</span>
+                        </div>
+                        <div class="lesson-list">
+                            @if (module.Lessons != null && module.Lessons.Any())
+                            {
+                                foreach (var lesson in module.Lessons)
+                                {
+                                    <div class="lesson-item">
+                                        <span class="lesson-icon">▶</span>
+                                        <span>@lesson.LessonTitle</span>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="lesson-item">No lessons in this module.</div>
+                            }
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <p>No syllabus available yet.</p>
+            }
+        </div>
+
+        <div class="sidebar-section">
+            <div style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                <h3 style="margin-bottom: 20px; font-size: 18px;">Course Info</h3>
+                <ul style="list-style: none; color: #4b5563; font-size: 14px;">
+                    <li style="margin-bottom: 10px;">🕒 Full lifetime access</li>
+                    <li style="margin-bottom: 10px;">📱 Access on mobile and TV</li>
+                    <li style="margin-bottom: 10px;">📜 Certificate of completion</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

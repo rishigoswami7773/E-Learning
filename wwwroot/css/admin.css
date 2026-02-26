@@ -1,0 +1,97 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    background: #f3f4f6;
+    color: #111827;
+}
+
+.admin-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 260px;
+    background: #111827;
+    color: white;
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: fixed;
+    height: 100vh;
+}
+
+.sidebar h2 {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 30px;
+    padding-left: 10px;
+    color: #3b82f6;
+}
+
+.sidebar a {
+    text-decoration: none;
+    color: #9ca3af;
+    padding: 12px 15px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+.sidebar a:hover {
+    background: #1f2937;
+    color: white;
+}
+
+.sidebar a.active {
+    background: #2563eb;
+    color: white;
+}
+
+/* Content */
+.admin-content {
+    flex: 1;
+    margin-left: 260px;
+    padding: 40px;
+}
+
+h1 {
+    font-size: 28px;
+    margin-bottom: 10px;
+}
+
+/* Instructor Card (for Instructors view) */
+.instructor-card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    width: 200px;
+    text-align: center;
+}
+
+.instructor-img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 15px;
+}
+
+.instructor-card h3 {
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+
+.instructor-card p {
+    font-size: 13px;
+    color: #6b7280;
+}

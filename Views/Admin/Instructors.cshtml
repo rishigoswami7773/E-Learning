@@ -1,0 +1,33 @@
+﻿@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Instructors";
+}
+
+<style>
+    .instructors-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 25px;
+    }
+</style>
+
+<div class="dashboard-container">
+    <h1>Instructors</h1>
+    <p style="color: #6b7280; margin-bottom: 30px;">Manage your teaching staff.</p>
+
+    <div class="instructors-grid">
+        <div class="instructor-card">
+            <div class="instructor-img" style="background: #e5e7eb; display: flex; align-items: center; justify-content: center; font-size: 30px;">👨‍🏫</div>
+            <h3>Sarah Johnson</h3>
+            <p>12 Courses</p>
+            <button style="margin-top:10px; padding: 5px 15px; border: 1px solid #2b59ff; color: #2b59ff; background: transparent; border-radius: 5px; cursor: pointer;">View Profile</button>
+        </div>
+
+        <div class="instructor-card">
+            <div class="instructor-img" style="background: #e5e7eb; display: flex; align-items: center; justify-content: center; font-size: 30px;">👩‍🏫</div>
+            <h3>Dr. Robert Smith</h3>
+            <p>8 Courses</p>
+            <button style="margin-top:10px; padding: 5px 15px; border: 1px solid #2b59ff; color: #2b59ff; background: transparent; border-radius: 5px; cursor: pointer;">View Profile</button>
+        </div>
+    </div>
+</div>

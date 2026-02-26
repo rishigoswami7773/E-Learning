@@ -1,0 +1,105 @@
+@model Project_BD.Models.Category
+
+@{
+    ViewData["Title"] = "Delete Category";
+}
+
+<style>
+    .delete-container {
+        max-width: 500px;
+        margin: 80px auto;
+        padding: 40px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        text-align: center;
+    }
+
+    .warning-icon {
+        font-size: 60px;
+        color: #ef4444;
+        margin-bottom: 20px;
+    }
+
+    .delete-header h2 {
+        font-size: 24px;
+        color: #111827;
+        margin-bottom: 10px;
+    }
+
+    .delete-header p {
+        color: #6b7280;
+        margin-bottom: 30px;
+    }
+
+    .category-summary {
+        background: #fef2f2;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+        text-align: left;
+    }
+
+    .category-summary dl {
+        margin: 0;
+    }
+
+    .category-summary dt {
+        font-size: 12px;
+        color: #991b1b;
+        text-transform: uppercase;
+        font-weight: bold;
+    }
+
+    .category-summary dd {
+        font-size: 18px;
+        color: #111827;
+        margin-bottom: 0;
+        font-weight: 500;
+    }
+
+    .btn-delete {
+        width: 100%;
+        padding: 12px;
+        background: #ef4444;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
+        margin-bottom: 15px;
+    }
+
+    .btn-delete:hover {
+        background: #dc2626;
+    }
+
+    .btn-cancel {
+        display: block;
+        color: #6b7280;
+        text-decoration: none;
+        font-size: 14px;
+    }
+</style>
+
+<div class="delete-container">
+    <div class="warning-icon">⚠️</div>
+    <div class="delete-header">
+        <h2>Delete Category?</h2>
+        <p>Warning: Deleting this category might affect courses associated with it.</p>
+    </div>
+
+    <div class="category-summary">
+        <dl>
+            <dt>Category Name</dt>
+            <dd>@Model.Name</dd>
+        </dl>
+    </div>
+
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="CategoryId" />
+        <button type="submit" class="btn-delete">Yes, Delete Category</button>
+    </form>
+    <a asp-action="Index" class="btn-cancel">No, keep it</a>
+</div>

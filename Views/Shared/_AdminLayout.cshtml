@@ -1,0 +1,32 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="~/css/admin.css" />
+</head>
+<body>
+
+    <div class="admin-container">
+
+        <aside class="sidebar">
+            <h2>E-Learning</h2>
+            <a asp-controller="Admin" asp-action="Dashboard">Dashboard</a>
+            <a asp-controller="Admin" asp-action="ManageUsers">Manage Users</a>
+            <a asp-controller="Admin" asp-action="Instructors">Instructors</a>
+            <a asp-controller="Course" asp-action="Index">Manage Courses</a>
+            <a asp-controller="Category" asp-action="Index">Manage Categories</a>
+            <a asp-controller="Admin" asp-action="CourseApproval">Course Approval</a>
+            <a asp-controller="Admin" asp-action="Payments">Payments</a>
+            <a asp-controller="Admin" asp-action="Analytics">Analytics</a>
+            <a asp-controller="Admin" asp-action="Settings">Settings</a>
+        </aside>
+
+        <main class="admin-content">
+            @RenderBody()
+        </main>
+
+    </div>
+
+</body>
+</html>
