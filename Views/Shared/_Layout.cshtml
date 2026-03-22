@@ -56,18 +56,44 @@ aria-expanded="false" aria-label="Toggle navigation">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>E-Learning</title>
+    <title>@ViewData["Title"] - E-Learning</title>
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 
     <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #eff6ff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --bg-body: #f8fafc;
+            --white: #ffffff;
+            --border: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: Arial, sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
         }
 
         body {
-            background: #f5f7fa;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.5;
         }
 
         /* Navbar */
@@ -75,18 +101,29 @@ aria-expanded="false" aria-label="Toggle navigation">
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 16px 8%;
-            background: white;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
+            padding: 20px 8%;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
             position: sticky;
             top: 0;
             z-index: 1000;
+            border-bottom: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            padding: 12px 8%;
+            box-shadow: var(--shadow-sm);
         }
 
         .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
             font-weight: 800;
-            font-size: 22px;
-            color: #1e293b;
+            font-size: 24px;
+            color: var(--primary);
+            text-decoration: none;
             letter-spacing: -0.5px;
         }
 
@@ -99,229 +136,311 @@ aria-expanded="false" aria-label="Toggle navigation">
 
         .nav-links a {
             text-decoration: none;
-            color: #475569;
+            color: var(--text-main);
             font-weight: 600;
             font-size: 15px;
             transition: color 0.2s;
         }
 
         .nav-links a:hover {
-            color: #2563eb;
+            color: var(--primary);
         }
 
-        .profile-btn {
-            padding: 10px 20px;
-            background: #2563eb;
+        .nav-links a.active {
+            color: var(--primary);
+        }
+
+        .btn-auth {
+            padding: 10px 24px;
+            background: var(--primary);
             color: white !important;
-            border-radius: 10px;
-            font-weight: 700 !important;
+            border-radius: 12px;
+            font-weight: 700;
             box-shadow: 0 4px 6px -1px rgb(37 99 235 / 0.2);
             transition: all 0.2s;
         }
 
-        .profile-btn:hover {
-            background: #1d4ed8;
+        .btn-auth:hover {
+            background: var(--primary-dark);
             transform: translateY(-1px);
             box-shadow: 0 10px 15px -3px rgb(37 99 235 / 0.3);
         }
 
-        /* Hero */
-        .hero {
-            text-align: center;
-            padding: 80px 20px;
-            background: linear-gradient(135deg, #2b59ff, #4e73df);
-            color: white;
-        }
-
-        .hero h1 {
-            font-size: 42px;
-            margin-bottom: 15px;
-        }
-
-        .hero p {
-            font-size: 18px;
-            margin-bottom: 30px;
-        }
-
-        .btn-primary {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 8px;
-            background: white;
-            color: #2b59ff;
-            font-weight: bold;
-            cursor: pointer;
-            margin: 10px;
-        }
-
-        .btn-secondary {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 8px;
-            background: #dfe6ff;
-            color: #2b59ff;
-            font-weight: bold;
-            cursor: pointer;
-            margin: 10px;
-        }
-
-        /* Features */
-        .features {
-            padding: 70px 8%;
-            text-align: center;
-        }
-
-        .features h2 {
-            font-size: 30px;
-            margin-bottom: 10px;
-        }
-
-        .subtitle {
-            color: gray;
-            margin-bottom: 40px;
-        }
-
-        .feature-cards {
+        /* Profile Dropdown */
+        .user-profile-nav {
             display: flex;
-            justify-content: center;
-            gap: 30px;
-            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px;
+            padding: 6px 14px;
+            background: var(--primary-light);
+            border-radius: 50px;
+            border: 1px solid rgba(37, 99, 235, 0.1);
+            margin-left: 10px;
+            text-decoration: none;
         }
 
-        .card {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            width: 300px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
-        }
-
-        .icon {
-            font-size: 35px;
-            margin-bottom: 15px;
-        }
-
-        /* CTA */
-        .cta {
-            text-align: center;
-            padding: 60px 20px;
-            background: #e9eef6;
-        }
-
-        .btn-dark {
-            padding: 12px 30px;
-            border: none;
-            border-radius: 8px;
-            background: #111827;
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background: var(--primary);
             color: white;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        .user-info-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-main);
+            line-height: 1;
+        }
+
+        .logout-link {
+            color: #ef4444;
+            font-size: 10px;
+            font-weight: 800;
+            text-decoration: none;
+            text-transform: uppercase;
+            margin-top: 2px;
         }
 
         /* Footer */
-        footer {
-            text-align: center;
-            padding: 20px;
-            background: #1f2937;
+        .site-footer {
+            background: #0f172a;
+            padding: 100px 8% 40px;
             color: white;
         }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 60px;
+            margin-bottom: 80px;
+        }
+
+        .footer-logo {
+            margin-bottom: 24px;
+        }
+
+        .footer-desc {
+            color: #94a3b8;
+            line-height: 1.6;
+            font-size: 15px;
+            max-width: 350px;
+        }
+
+        .footer-heading {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .footer-links {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-links li {
+            margin-bottom: 15px;
+        }
+
+        .footer-links a {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 15px;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid #1e293b;
+            padding-top: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 20px;
+        }
+
+        .social-icons a {
+            color: #94a3b8;
+            font-size: 20px;
+            transition: color 0.2s;
+        }
+
+        .social-icons a:hover {
+            color: white;
+        }
+
+        @media(max-width:1024px) {
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 40px;
+            }
+        }
+
+        @media(max-width:768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .navbar {
+                padding: 15px 5%;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
+    @await RenderSectionAsync("Styles", required: false)
 </head>
 
 <body>
 
-    <nav class="navbar">
-        <div class="logo">🎓 E-Learning</div>
-        <ul class="nav-links" style="align-items: center;">
-            <li><a asp-controller="Home" asp-action="Index">Home</a></li>
-            <li><a asp-controller="Course" asp-action="Index">Courses</a></li>
-            <li><a asp-controller="Home" asp-action="About">About</a></li>
-            
+    <nav class="navbar" id="mainNavbar">
+        <a asp-controller="Home" asp-action="Index" class="logo">
+            <i class="fas fa-graduation-cap"></i> E-Learning
+        </a>
+
+        <ul class="nav-links">
+            <li><a asp-controller="Home" asp-action="Index"
+                    class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "Index" && ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" ? "active" : "")">Home</a>
+            </li>
+            <li><a asp-controller="Course" asp-action="Index"
+                    class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Course" ? "active" : "")">Courses</a>
+            </li>
+            <li><a asp-controller="Home" asp-action="About"
+                    class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "About" ? "active" : "")">About</a>
+            </li>
+            <li><a asp-controller="Home" asp-action="Contact"
+                    class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "Contact" ? "active" : "")">Contact</a>
+            </li>
+        </ul>
+
+        <div style="display: flex; align-items: center; gap: 20px;">
             @if (Context.Session.GetInt32("UserId") != null)
             {
                 @if (Context.Session.GetString("UserRole") == "Admin")
                 {
-                    <li><a asp-controller="Admin" asp-action="Dashboard" style="color: #2563eb; font-weight: 700;">Admin Panel</a></li>
+                    <a asp-controller="Admin" asp-action="Dashboard"
+                        style="color: var(--primary); font-weight: 700; text-decoration: none; font-size: 14px;">Admin Panel</a>
                 }
                 else
                 {
-                    <li><a asp-controller="Student" asp-action="Dashboard" style="color: #2563eb; font-weight: 700;">My Dashboard</a></li>
+                    <a asp-controller="Student" asp-action="Dashboard"
+                        style="color: var(--primary); font-weight: 700; text-decoration: none; font-size: 14px;">My
+                        Dashboard</a>
                 }
 
-                <li style="display: flex; align-items: center; gap: 12px; padding: 6px 14px; background: #f8fafc; border-radius: 50px; border: 1px solid #e2e8f0; margin-left: 10px;">
-                    <div style="width: 32px; height: 32px; background: #2563eb; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px;">
+                <div class="user-profile-nav">
+                    <div class="user-avatar">
                         @(Context.Session.GetString("UserName")?.Substring(0, 1).ToUpper() ?? "U")
                     </div>
-                    <div style="display: flex; flex-direction: column;">
-                        <span style="font-size: 13px; font-weight: 700; color: #1e293b; line-height: 1;">@Context.Session.GetString("UserName")</span>
-                        <a asp-controller="Users" asp-action="Logout" style="color: #ef4444; font-size: 10px; font-weight: 800; text-decoration: none; text-transform: uppercase; margin-top: 2px;">Logout</a>
+                    <div class="user-info-text">
+                        <span class="user-name">@Context.Session.GetString("UserName")</span>
+                        <a asp-controller="Users" asp-action="Logout" class="logout-link">Logout</a>
                     </div>
-                </li>
+                </div>
             }
             else
             {
-                <li><a asp-controller="Home" asp-action="Contact">Contact</a></li>
-                <li><a asp-controller="Users" asp-action="Login" class="profile-btn">Sign In / Register</a></li>
+                <a asp-controller="Users" asp-action="Login" class="btn-auth">Sign In / Register</a>
             }
-        </ul>
+        </div>
     </nav>
 
-    @RenderBody()
+    <main role="main">
+        @RenderBody()
+    </main>
 
-    <!-- Footer -->
-    <footer style="background: #0f172a; padding: 80px 8% 40px; color: white;">
-        <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 60px;">
+    <footer class="site-footer">
+        <div class="footer-grid">
             <div>
-                <div class="logo" style="color: white; margin-bottom: 20px;">🎓 E-Learning</div>
-                <p style="color: #94a3b8; line-height: 1.6; font-size: 14px; max-width: 300px;">
-                    Empowering learners worldwide with high-quality, industry-relevant professional education.
+                <a href="/" class="logo footer-logo" style="color: white;">
+                    <i class="fas fa-graduation-cap"></i> E-Learning
+                </a>
+                <p class="footer-desc">
+                    Unlocking human potential through accessible, high-quality education. Join 15,000+ students learning
+                    the most in-demand technologies today.
                 </p>
-                <div style="display: flex; gap: 15px; margin-top: 25px;">
-                    <a href="#" style="color: #94a3b8; font-size: 20px;"><i class="fab fa-facebook"></i></a>
-                    <a href="#" style="color: #94a3b8; font-size: 20px;"><i class="fab fa-twitter"></i></a>
-                    <a href="#" style="color: #94a3b8; font-size: 20px;"><i class="fab fa-linkedin"></i></a>
-                    <a href="#" style="color: #94a3b8; font-size: 20px;"><i class="fab fa-instagram"></i></a>
+                <div class="social-icons" style="margin-top: 30px;">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
                 </div>
             </div>
+
             <div>
-                <h4 style="font-size: 16px; font-weight: 700; margin-bottom: 25px;">Platform</h4>
-                <ul style="list-style: none; padding: 0;">
-                    <li style="margin-bottom: 12px;"><a asp-controller="Course" asp-action="Index"
-                            style="color: #94a3b8; text-decoration: none; font-size: 14px;">Browse Courses</a></li>
-                    <li style="margin-bottom: 12px;"><a href="#"
-                            style="color: #94a3b8; text-decoration: none; font-size: 14px;">Instructors</a></li>
-                    <li style="margin-bottom: 12px;"><a href="#"
-                            style="color: #94a3b8; text-decoration: none; font-size: 14px;">Certificates</a></li>
+                <h4 class="footer-heading">Platform</h4>
+                <ul class="footer-links">
+                    <li><a asp-controller="Course" asp-action="Index">Browse Courses</a></li>
+                    <li><a href="#">Instructor Portal</a></li>
+                    <li><a href="#">Learning Paths</a></li>
+                    <li><a href="#">Certification</a></li>
                 </ul>
             </div>
+
             <div>
-                <h4 style="font-size: 16px; font-weight: 700; margin-bottom: 25px;">Company</h4>
-                <ul style="list-style: none; padding: 0;">
-                    <li style="margin-bottom: 12px;"><a asp-controller="Home" asp-action="About"
-                            style="color: #94a3b8; text-decoration: none; font-size: 14px;">About Us</a></li>
-                    <li style="margin-bottom: 12px;"><a asp-controller="Home" asp-action="Contact"
-                            style="color: #94a3b8; text-decoration: none; font-size: 14px;">Contact Us</a></li>
-                    <li style="margin-bottom: 12px;"><a asp-controller="Home" asp-action="Privacy"
-                            style="color: #94a3b8; text-decoration: none; font-size: 14px;">Privacy Policy</a></li>
+                <h4 class="footer-heading">Company</h4>
+                <ul class="footer-links">
+                    <li><a asp-controller="Home" asp-action="About">Our Story</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a asp-controller="Home" asp-action="Privacy">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
                 </ul>
             </div>
+
             <div>
-                <h4 style="font-size: 16px; font-weight: 700; margin-bottom: 25px;">Support</h4>
-                <ul style="list-style: none; padding: 0;">
-                    <li style="margin-bottom: 12px;"><a asp-controller="Home" asp-action="FAQ"
-                            style="color: #94a3b8; text-decoration: none; font-size: 14px;">Help Center</a></li>
-                    <li style="margin-bottom: 12px;"><a href="#"
-                            style="color: #94a3b8; text-decoration: none; font-size: 14px;">Status</a></li>
+                <h4 class="footer-heading">Support</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Help Center</a></li>
+                    <li><a asp-controller="Home" asp-action="Contact">Contact Us</a></li>
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">System Status</a></li>
                 </ul>
             </div>
         </div>
-        <div
-            style="border-top: 1px solid #1e293b; padding-top: 30px; text-align: center; color: #64748b; font-size: 14px;">
-            <p>© @DateTime.Now.Year E-Learning Platform. All rights reserved.</p>
+
+        <div class="footer-bottom">
+            <p>© @DateTime.Now.Year E-Learning Platform. Designed for excellence.</p>
+            <p>Built with <i class="fas fa-heart" style="color: #ef4444;"></i> for learners everywhere.</p>
         </div>
     </footer>
 
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script>
+        window.addEventListener('scroll', function () {
+            const navbar = document.getElementById('mainNavbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 
 </html>

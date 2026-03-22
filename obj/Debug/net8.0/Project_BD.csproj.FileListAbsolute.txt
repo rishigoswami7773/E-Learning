@@ -277,3 +277,4 @@ D:\C#.net_CORE\Project_BD - NT\obj\Debug\net8.0\swae.build.ex.cache
 D:\C#.net_CORE\Project_BD - NT\obj\Debug\net8.0\Project_BD.csproj.Up2Date
 D:\C#.net_CORE\Project_BD - NT\obj\Debug\net8.0\Project_BD.genruntimeconfig.cache
 D:\C#.net_CORE\Project_BD - NT\obj\Debug\net8.0\ref\Project_BD.dll
+D:\C#.net_CORE\Project_BD - NT\obj\Debug\net8.0\Project_BD.sourcelink.json

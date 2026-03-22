@@ -1,215 +1,419 @@
 ﻿@model IEnumerable<Project_BD.Models.Course>
 
 @{
-    ViewData["Title"] = "Courses";
+    ViewData["Title"] = "Professional Catalog";
 }
 
 <style>
-    .courses-container {
-        padding: 40px 8%;
-    }
-
-    .header-section {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 30px;
-    }
-
-    .header-section h1 {
-        font-size: 32px;
-        color: #1f2937;
-    }
-
-    .btn-create {
-        background: #2b59ff;
-        color: white;
-        padding: 10px 20px;
-        border-radius: 8px;
-        text-decoration: none;
-        font-weight: bold;
-        transition: 0.3s;
-    }
-
-    .btn-create:hover {
-        background: #1e40af;
-    }
-
-    .course-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 25px;
-    }
-
-    .course-card {
+    .catalog-header {
+        padding: 80px 8% 40px;
+        text-align: center;
         background: white;
+    }
+
+    .catalog-header span {
+        font-size: 14px;
+        text-transform: uppercase;
+        color: var(--primary);
+        font-weight: 800;
+        letter-spacing: 2px;
+    }
+
+    .catalog-header h1 {
+        font-size: 48px;
+        font-weight: 800;
+        color: var(--text-main);
+        letter-spacing: -2px;
+        margin: 12px 0 24px;
+    }
+
+    .filter-bar {
+        background: white;
+        margin: 0 8% 60px;
+        padding: 32px;
+        border-radius: 24px;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--border);
+        display: grid;
+        grid-template-columns: 1.5fr 2fr;
+        gap: 40px;
+        align-items: center;
+    }
+
+    @media(max-width:992px) {
+        .filter-bar {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .search-wrapper {
+        position: relative;
+    }
+
+    .search-wrapper i {
+        position: absolute;
+        left: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 16px 20px 16px 52px;
+        border-radius: 16px;
+        border: 1px solid var(--border);
+        background: #f8fafc;
+        outline: none;
+        font-weight: 600;
+        transition: all 0.3s;
+    }
+
+    .search-input:focus {
+        border-color: var(--primary);
+        background: white;
+        box-shadow: 0 0 0 4px var(--primary-light);
+    }
+
+    .price-range-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .range-labels {
+        display: flex;
+        justify-content: space-between;
+        font-size: 12px;
+        font-weight: 800;
+        color: var(--text-muted);
+        text-transform: uppercase;
+    }
+
+    .price-slider {
+        width: 100%;
+        height: 6px;
+        background: #e2e8f0;
+        border-radius: 10px;
+        appearance: none;
+        outline: none;
+    }
+
+    .price-slider::-webkit-slider-thumb {
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        background: var(--primary);
+        border: 4px solid white;
+        border-radius: 50%;
+        cursor: pointer;
+        box-shadow: var(--shadow);
+    }
+
+    .tabs-container {
+        margin: 0 8% 40px;
+        display: flex;
+        gap: 12px;
+        overflow-x: auto;
+        padding-bottom: 10px;
+    }
+
+    .category-tab {
+        padding: 12px 24px;
         border-radius: 12px;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 14px;
+        white-space: nowrap;
+        transition: all 0.2s;
+        border: 1px solid var(--border);
+        background: white;
+        color: var(--text-muted);
+    }
+
+    .category-tab:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+    }
+
+    .category-tab.active {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+        box-shadow: 0 8px 16px -4px rgba(37, 99, 235, 0.4);
+    }
+
+    /* Course Cards (Photo Style) */
+    .catalog-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 32px;
+        padding: 0 8% 100px;
+    }
+
+    .premium-course-card {
+        background: #0f172a;
+        border-radius: 40px;
         overflow: hidden;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-        transition: transform 0.3s, box-shadow 0.3s;
+        position: relative;
+        height: 480px;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        text-decoration: none;
     }
 
-    .course-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    .premium-course-card:hover {
+        transform: translateY(-12px) scale(1.02);
+        box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.3);
     }
 
-    .course-img {
-        height: 180px;
-        background: #e5e7eb;
+    .course-bg-img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0.6;
+        transition: transform 0.6s;
+    }
+
+    .premium-course-card:hover .course-bg-img {
+        transform: scale(1.1);
+    }
+
+    .card-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to bottom, transparent 20%, rgba(15, 23, 42, 0.9) 80%);
+        padding: 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+    }
+
+    .instructor-tag {
+        position: absolute;
+        top: 30px;
+        right: 30px;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(12px);
+        padding: 8px 16px;
+        border-radius: 100px;
         display: flex;
         align-items: center;
-        justify-content: center;
-        font-size: 50px;
+        gap: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
-    .course-content {
-        padding: 20px;
+    .instructor-tag img {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
     }
 
-    .course-category {
-        font-size: 12px;
-        color: #6b7280;
+    .instructor-tag span {
+        color: white;
+        font-size: 11px;
+        font-weight: 800;
         text-transform: uppercase;
-        font-weight: bold;
-        margin-bottom: 8px;
+        letter-spacing: 0.5px;
     }
 
-    .course-title {
-        font-size: 18px;
-        color: #111827;
-        margin-bottom: 10px;
-        font-weight: bold;
+    .cat-pill {
+        background: var(--primary);
+        color: white;
+        padding: 6px 16px;
+        border-radius: 8px;
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        align-self: flex-start;
+        margin-bottom: 16px;
     }
 
-    .course-desc {
-        font-size: 14px;
-        color: #4b5563;
-        margin-bottom: 15px;
+    .card-title {
+        color: white;
+        font-size: 28px;
+        font-weight: 800;
+        line-height: 1.2;
+        letter-spacing: -1px;
+        margin-bottom: 16px;
+    }
+
+    .card-description {
+        color: #94a3b8;
+        font-size: 15px;
         line-height: 1.5;
-        height: 60px;
-        overflow: hidden;
+        margin-bottom: 30px;
         display: -webkit-box;
-        -webkit-line-clamp: 3;
+        -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
+        overflow: hidden;
     }
 
-    .course-footer {
+    .card-footer {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        border-top: 1px solid #f3f4f6;
-        padding-top: 15px;
+        padding-top: 24px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
     }
 
-    .course-price {
-        font-size: 18px;
-        color: #2b59ff;
-        font-weight: bold;
-    }
-
-    .course-actions {
+    .price-group {
         display: flex;
-        gap: 10px;
+        flex-direction: column;
     }
 
-    .btn-edit {
-        color: #4b5563;
-        text-decoration: none;
-        font-size: 14px;
+    .price-label {
+        color: #64748b;
+        font-size: 10px;
+        font-weight: 800;
+        text-transform: uppercase;
     }
 
-    .btn-delete {
-        color: #ef4444;
-        text-decoration: none;
+    .price-val {
+        color: #10b981;
+        font-size: 24px;
+        font-weight: 800;
+    }
+
+    .btn-explore {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(12px);
+        color: white;
+        padding: 12px 24px;
+        border-radius: 12px;
+        font-weight: 700;
         font-size: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s;
+    }
+
+    .premium-course-card:hover .btn-explore {
+        background: white;
+        color: var(--text-main);
     }
 </style>
 
-<div class="courses-container">
-    <div class="header-section">
-        <div>
-            <h1>@(ViewBag.SelectedCategory ?? "All Explorations")</h1>
-            <p style="color: #64748b; margin-top: 4px;">Choose from our curated collection of professional courses.</p>
+<div class="catalog-header">
+    <span>Catalog</span>
+    <h1>Master New Skills</h1>
+    <p style="color: var(--text-muted); max-width: 600px; margin: 0 auto;">Join 15,000+ students learning the most
+        in-demand technologies today.</p>
+</div>
+
+<div class="filter-bar">
+    <div class="search-wrapper">
+        <i class="fas fa-search"></i>
+        <input type="text" class="search-input" placeholder="Search courses..." id="courseSearch" />
+    </div>
+
+    <div class="price-range-wrapper">
+        <div class="range-labels">
+            <span>Min Price</span>
+            <span id="priceDisplay">Max Price: $20,000</span>
         </div>
-        @if (Context.Session.GetString("UserRole") == "Admin")
-        {
-            <a asp-action="Create" class="btn-create">+ Add New Course</a>
-        }
+        <input type="range" class="price-slider" min="0" max="20000" step="100" value="20000" id="priceRange" />
     </div>
+</div>
 
-    <!-- Category Filter Tabs -->
-    <div style="margin-bottom: 40px; display: flex; gap: 12px; flex-wrap: wrap;">
-        <a asp-action="Index" style="padding: 10px 20px; border-radius: 50px; text-decoration: none; font-size: 14px; font-weight: 600; 
-                  background: @(ViewBag.SelectedCategory == null ? "#2563eb" : "#f1f5f9"); 
-                  color: @(ViewBag.SelectedCategory == null ? "white" : "#475569"); 
-                  border: 1px solid @(ViewBag.SelectedCategory == null ? "#2563eb" : "#e2e8f0");">
-            All Courses
-        </a>
-        @if (ViewBag.Categories != null)
+<div class="tabs-container">
+    <a asp-action="Index" class="category-tab @(ViewBag.SelectedCategoryId == null ? "active" : "")">All Courses</a>
+    @if (ViewBag.Categories != null)
+    {
+        foreach (var cat in ViewBag.Categories)
         {
-            foreach (var cat in ViewBag.Categories)
-            {
-                <a asp-action="Index" asp-route-categoryId="@cat.CategoryId" style="padding: 10px 20px; border-radius: 50px; text-decoration: none; font-size: 14px; font-weight: 600; 
-                          background: @(ViewBag.SelectedCategory == cat.Name ? "#2563eb" : "#f1f5f9"); 
-                          color: @(ViewBag.SelectedCategory == cat.Name ? "white" : "#475569"); 
-                          border: 1px solid @(ViewBag.SelectedCategory == cat.Name ? "#2563eb" : "#e2e8f0");">
-                    @cat.Name
-                </a>
-            }
+            <a asp-action="Index" asp-route-categoryId="@cat.CategoryId"
+                class="category-tab @(ViewBag.SelectedCategoryId == cat.CategoryId ? "active" : "")">
+                @cat.Name
+            </a>
         }
-    </div>
+    }
+</div>
 
+<div class="catalog-grid">
     @if (!Model.Any())
     {
-        <div style="text-align: center; padding: 50px; color: #6b7280;">
-            <h3>No courses found. Start by creating one!</h3>
+        <div
+            style="grid-column: 1/-1; text-align: center; padding: 100px; background: white; border-radius: 40px; border: 1px dashed var(--border);">
+            <i class="fas fa-search" style="font-size: 48px; color: var(--border); margin-bottom: 24px;"></i>
+            <h3 style="font-size: 24px; font-weight: 800;">No courses found</h3>
+            <p style="color: var(--text-muted);">Try adjusting your filters or category.</p>
         </div>
     }
     else
     {
-        <div class="course-grid">
-            @foreach (var item in Model)
-            {
-                <div class="course-card">
-                    <div class="course-img">
-                        @if (!string.IsNullOrEmpty(item.ThumbnailUrl))
-                        {
-                            <img src="@item.ThumbnailUrl" alt="@item.Title" style="width: 100%; height: 100%; object-fit: cover;" />
-                        }
-                        else
-                        {
-                            <span>📚</span>
-                        }
-                    </div>
-                    <div class="course-content">
-                        <div class="course-category">
-                            @(item.Category?.Name ?? "General")
-                            @if (Context.Session.GetString("UserRole") == "Admin" && !item.IsApproved)
-                            {
-                                <span style="background: #fef2f2; color: #dc2626; padding: 2px 8px; border-radius: 4px; font-size: 10px; margin-left: 5px; border: 1px solid #fecaca;">PENDING</span>
-                            }
+        @foreach (var item in Model)
+        {
+            <a asp-action="Details" asp-route-id="@item.CourseId" class="premium-course-card">
+                @if (!string.IsNullOrEmpty(item.ThumbnailUrl))
+                {
+                    <img src="@item.ThumbnailUrl" class="course-bg-img" alt="@item.Title" />
+                }
+                else
+                {
+                    <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=2070"
+                        class="course-bg-img" alt="Course" />
+                }
+
+                <div class="instructor-tag">
+                    <img src="https://i.pravatar.cc/150?u=@(item.CourseId)" />
+                    <span>@(item.InstructorName ?? "Industry Expert")</span>
+                </div>
+
+                <div class="card-overlay">
+                    <div class="cat-pill">@(item.Category?.Name ?? "General")</div>
+                    <h3 class="card-title">@item.Title</h3>
+                    <p class="card-description">@item.Description</p>
+
+                    <div class="card-footer">
+                        <div class="price-group">
+                            <span class="price-label">Fixed Price</span>
+                            <span class="price-val">$@item.Price</span>
                         </div>
-                        <a asp-action="Details" asp-route-id="@item.CourseId" style="text-decoration: none;">
-                            <div class="course-title">@item.Title</div>
-                        </a>
-                        <p class="course-desc">@item.Description</p>
-                        <div class="course-footer">
-                            <span class="course-price">$@item.Price</span>
-                            <div class="course-actions">
-                                <a asp-action="Details" asp-route-id="@item.CourseId"
-                                    style="background: #eff6ff; color: #2563eb; padding: 6px 14px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 700;">View Course</a>
-                                
-                                @if (Context.Session.GetString("UserRole") == "Admin")
-                                {
-                                    <a asp-action="Edit" asp-route-id="@item.CourseId" class="btn-edit" style="margin-top: 5px;"><i class="fas fa-edit"></i></a>
-                                    <a asp-action="Delete" asp-route-id="@item.CourseId" class="btn-delete" style="margin-top: 5px;"><i class="fas fa-trash"></i></a>
-                                }
-                            </div>
-                        </div>
+                        <div class="btn-explore">Explore Course</div>
                     </div>
                 </div>
-            }
-        </div>
+
+                @if (Context.Session.GetString("UserRole") == "Admin" && !item.IsApproved)
+                {
+                    <div
+                        style="position: absolute; top: 30px; left: 30px; background: #ef4444; color: white; padding: 4px 12px; border-radius: 8px; font-size: 10px; font-weight: 900;">
+                        PENDING</div>
+                }
+            </a>
+        }
     }
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#priceRange').on('input', function () {
+                $('#priceDisplay').text('Max Price: $' + $(this).val());
+                filterCourses();
+            });
+
+            $('#courseSearch').on('keyup', function () {
+                filterCourses();
+            });
+
+            function filterCourses() {
+                const query = $('#courseSearch').val().toLowerCase();
+                const maxPrice = parseInt($('#priceRange').val());
+
+                $('.premium-course-card').each(function () {
+                    const title = $(this).find('.card-title').text().toLowerCase();
+                    const price = parseInt($(this).find('.price-val').text().replace('$', ''));
+
+                    if (title.includes(query) && price <= maxPrice) {
+                        $(this).fadeIn();
+                    } else {
+                        $(this).fadeOut();
+                    }
+                });
+            }
+        });
+    </script>
+}
