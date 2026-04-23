@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Project_BD.Models.Category>
+@model IEnumerable<Project_BD.Models.Category>
 
 @{
     ViewData["Title"] = "Premium Learning Experience";
@@ -272,7 +272,7 @@
         object-fit: cover;
     }
 
-    @media(max-width:768px) {
+    @("@media") (max-width: 768px) {
         .stats-bar {
             grid-template-columns: repeat(2, 1fr);
             gap: 20px;

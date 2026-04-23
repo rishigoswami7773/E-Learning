@@ -89,7 +89,7 @@
         <p style="color: #6b7280;">Update category name</p>
     </div>
 
-    <form asp-action="Edit">
+    <form asp-action="Edit" enctype="multipart/form-data">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <input type="hidden" asp-for="CategoryId" />
 
@@ -97,6 +97,24 @@
             <label asp-for="Name"></label>
             <input asp-for="Name" class="form-control" />
             <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Description"></label>
+            <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label>Update Category Image</label>
+            <input type="file" name="ImageFile" class="form-control" accept="image/*" />
+            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+            {
+                <div style="margin-top: 10px;">
+                    <img src="@Model.ImageUrl" alt="Current Image" style="max-height: 100px; border-radius: 8px; object-fit: cover;" />
+                </div>
+                <input type="hidden" asp-for="ImageUrl" />
+            }
         </div>
 
         <button type="submit" class="btn-submit">Update Category</button>

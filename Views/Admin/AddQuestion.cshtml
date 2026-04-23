@@ -1,0 +1,86 @@
+@{
+    ViewData["Title"] = "Add Question";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var quiz = ViewBag.Quiz as Project_BD.Models.Quiz;
+}
+
+<style>
+    .aq-wrap { max-width:720px; margin:0 auto; }
+    .aq-card  { background:#fff; border-radius:18px; box-shadow:0 4px 24px rgba(0,0,0,.07); overflow:hidden; }
+    .aq-top   { background:linear-gradient(135deg,#2563eb,#1d4ed8); padding:28px 32px; color:#fff; }
+    .aq-top h1 { font-size:22px; font-weight:700; margin:0 0 4px; }
+    .aq-top p  { font-size:14px; opacity:.85; margin:0; }
+    .aq-body  { padding:32px; }
+    .form-grp { margin-bottom:22px; }
+    .form-grp label { display:block; font-size:13px; font-weight:600; color:#475569; margin-bottom:8px; }
+    .form-grp textarea, .form-grp input[type=text] {
+        width:100%; padding:12px 16px; border:1px solid #e2e8f0; border-radius:10px;
+        font-size:15px; color:#111827; transition:.2s; box-sizing:border-box;
+    }
+    .form-grp textarea:focus, .form-grp input[type=text]:focus {
+        outline:none; border-color:#2563eb; box-shadow:0 0 0 3px rgba(37,99,235,.1);
+    }
+    .opts-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .opt-block { background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:16px; }
+    .opt-block label { display:block; font-size:12px; font-weight:700; color:#2563eb; margin-bottom:8px; text-transform:uppercase; }
+    .opt-block input[type=text] { width:100%; padding:10px 14px; border:1px solid #e2e8f0; border-radius:8px; font-size:14px; color:#111827; box-sizing:border-box; }
+    .correct-row { display:flex; align-items:center; gap:8px; margin-top:10px; }
+    .correct-row input[type=checkbox] { width:16px; height:16px; accent-color:#2563eb; }
+    .correct-row span { font-size:13px; color:#374151; font-weight:500; }
+    .btn-row  { display:flex; justify-content:space-between; align-items:center; margin-top:28px; }
+    .btn-save { padding:13px 32px; background:#2563eb; color:#fff; border:none; border-radius:12px; font-size:15px; font-weight:700; cursor:pointer; transition:.2s; }
+    .btn-save:hover { background:#1d4ed8; transform:translateY(-1px); }
+    .btn-cancel { padding:12px 24px; background:#f1f5f9; color:#374151; border-radius:12px; font-weight:600; text-decoration:none; font-size:14px; transition:.2s; }
+    .btn-cancel:hover { background:#e2e8f0; }
+    .tip { font-size:12px; color:#94a3b8; margin-top:6px; }
+</style>
+
+<div class="aq-wrap">
+    <div class="aq-card">
+        <div class="aq-top">
+            <h1>➕ Add New Question</h1>
+            <p>Quiz: @quiz?.Title &nbsp;|&nbsp; Course: @quiz?.Course?.Title</p>
+        </div>
+        <div class="aq-body">
+            @if (TempData["QuizMsg"] != null)
+            {
+                <div style="background:#fef2f2;color:#dc2626;padding:12px 16px;border-radius:10px;margin-bottom:20px;font-weight:600;">
+                    ⚠ @TempData["QuizMsg"]
+                </div>
+            }
+
+            <form method="post" asp-action="AddQuestion">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="quizId" value="@quiz?.QuizId" />
+
+                <div class="form-grp">
+                    <label>Question Text *</label>
+                    <textarea name="questionText" rows="3" placeholder="e.g. What is the main advantage of ASP.NET Core?" required></textarea>
+                </div>
+
+                <div class="form-grp">
+                    <label>Answer Options — tick the correct answer(s)</label>
+                    <p class="tip">Fill in all 4 options and check the box next to the correct answer.</p>
+                    <div class="opts-grid">
+                        @for (int i = 1; i <= 4; i++)
+                        {
+                            <div class="opt-block">
+                                <label>Option @i</label>
+                                <input type="text" name="option@i" placeholder="Type option @i here" required />
+                                <div class="correct-row">
+                                    <input type="checkbox" name="correct@i" id="c@i" value="true" />
+                                    <span>Mark as correct</span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="btn-row">
+                    <a href="@Url.Action("ManageQuestions","Admin",new{id=quiz?.QuizId})" class="btn-cancel">← Cancel</a>
+                    <button type="submit" class="btn-save">💾 Save Question</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

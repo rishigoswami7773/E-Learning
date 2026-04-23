@@ -127,9 +127,55 @@
     .lesson-icon {
         color: #2b59ff;
     }
+
+    .rating-overview {
+        margin: 18px 0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .star {
+        color: #f59e0b;
+        font-size: 16px;
+    }
+
+    .review-card {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 16px;
+        margin-top: 12px;
+    }
 </style>
 
 <div class="course-details-container">
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div style="background: #dcfce7; color: #166534; padding: 12px 16px; border-radius: 10px; margin-bottom: 16px; font-weight: 600;">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+    @if (TempData["ReviewError"] != null)
+    {
+        <div style="background: #fee2e2; color: #991b1b; padding: 12px 16px; border-radius: 10px; margin-bottom: 16px; font-weight: 600;">
+            @TempData["ReviewError"]
+        </div>
+    }
+    @if (TempData["ReviewSuccess"] != null)
+    {
+        <div style="background: #dcfce7; color: #166534; padding: 12px 16px; border-radius: 10px; margin-bottom: 16px; font-weight: 600;">
+            @TempData["ReviewSuccess"]
+        </div>
+    }
+    @if (TempData["QuizError"] != null)
+    {
+        <div style="background: #fef3c7; color: #92400e; padding: 12px 16px; border-radius: 10px; margin-bottom: 16px; font-weight: 600;">
+            @TempData["QuizError"]
+        </div>
+    }
+
     <div class="course-hero">
         <div class="course-hero-img">
             @if (!string.IsNullOrEmpty(Model.ThumbnailUrl))
@@ -154,6 +200,23 @@
             </div>
             <h1>@Model.Title</h1>
             <p style="color: #4b5563; font-size: 18px;">@Model.Description</p>
+            <div class="rating-overview">
+                <div>
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        if (i <= Math.Round((double)ViewBag.AverageRating))
+                        {
+                            <span class="star">★</span>
+                        }
+                        else
+                        {
+                            <span class="star" style="color:#d1d5db;">★</span>
+                        }
+                    }
+                </div>
+                <strong>@string.Format("{0:0.0}", (double)ViewBag.AverageRating)/5</strong>
+                <span style="color:#6b7280;">(@ViewBag.TotalReviews reviews)</span>
+            </div>
             @if (ViewBag.IsEnrolled)
             {
                 <div style="display: flex; gap: 10px; align-items: center; margin-top: 20px;">
@@ -169,10 +232,9 @@
             }
             else
             {
-                <form asp-action="Enroll" method="post" style="margin-top: 20px;">
-                    <input type="hidden" name="courseId" value="@Model.CourseId" />
-                    <button type="submit" class="btn-enroll">Enroll Now</button>
-                </form>
+                <a asp-action="Payment" asp-route-id="@Model.CourseId" class="btn-enroll" style="display:inline-block; text-decoration:none; margin-top:20px;">
+                    Proceed to Payment & Enroll
+                </a>
             }
         </div>
     </div>
@@ -255,6 +317,71 @@
                     <p style="font-size: 14px; text-align: center; color: #6b7280; border-top: 1px solid #eee; pt-3; mt-3;">Enroll to access course content and quizzes.</p>
                 }
             </div>
+
+            <div style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-top: 16px;">
+                <h3 style="margin-bottom: 16px; font-size: 18px;">Rate This Course</h3>
+                @if (ViewBag.IsEnrolled == true && ViewBag.UserRole != "Admin")
+                {
+                    <form asp-controller="Review" asp-action="AddOrUpdate" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="courseId" value="@Model.CourseId" />
+                        <label style="display:block; margin-bottom:8px; font-weight:600;">Rating</label>
+                        <select name="rating" style="width:100%; padding:10px; border:1px solid #d1d5db; border-radius:8px; margin-bottom:12px;">
+                            @for (int i = 5; i >= 1; i--)
+                            {
+                                if (ViewBag.MyReview != null && ViewBag.MyReview.Rating == i)
+                                {
+                                    <option value="@i" selected>@i Star</option>
+                                }
+                                else
+                                {
+                                    <option value="@i">@i Star</option>
+                                }
+                            }
+                        </select>
+                        <label style="display:block; margin-bottom:8px; font-weight:600;">Comment</label>
+                        <textarea name="comment" rows="4" required style="width:100%; padding:10px; border:1px solid #d1d5db; border-radius:8px;">@(ViewBag.MyReview?.Comment ?? "")</textarea>
+                        <button type="submit" class="btn-enroll" style="margin-top:12px; width:100%;">Save Review</button>
+                    </form>
+                }
+                else
+                {
+                    <p style="color:#6b7280; margin:0;">Enroll first to submit your rating and review.</p>
+                }
+            </div>
         </div>
+    </div>
+
+    <div style="margin-top: 28px;">
+        <h2 style="font-size: 24px; margin-bottom: 14px;">Student Reviews</h2>
+        @if (ViewBag.Reviews != null && ViewBag.Reviews.Count > 0)
+        {
+            @foreach (var review in ViewBag.Reviews)
+            {
+                <div class="review-card">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <strong>@(review.User?.Name ?? "Student")</strong>
+                        <span>
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                if (i <= review.Rating)
+                                {
+                                    <span class="star">★</span>
+                                }
+                                else
+                                {
+                                    <span class="star" style="color:#d1d5db;">★</span>
+                                }
+                            }
+                        </span>
+                    </div>
+                    <p style="margin:8px 0 0; color:#4b5563;">@review.Comment</p>
+                </div>
+            }
+        }
+        else
+        {
+            <p style="color:#6b7280;">No reviews yet. Be the first to review this course.</p>
+        }
     </div>
 </div>

@@ -1,0 +1,83 @@
+@model Project_BD.Models.Question
+@{
+    ViewData["Title"] = "Edit Question";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var opts = (Model.Options ?? new List<Project_BD.Models.Option>()).ToList();
+    while (opts.Count < 4) opts.Add(new Project_BD.Models.Option());
+}
+
+<style>
+    .eq-wrap  { max-width:720px; margin:0 auto; }
+    .eq-card  { background:#fff; border-radius:18px; box-shadow:0 4px 24px rgba(0,0,0,.07); overflow:hidden; }
+    .eq-top   { background:linear-gradient(135deg,#0f766e,#0d9488); padding:28px 32px; color:#fff; }
+    .eq-top h1{ font-size:22px; font-weight:700; margin:0 0 4px; }
+    .eq-top p { font-size:14px; opacity:.85; margin:0; }
+    .eq-body  { padding:32px; }
+    .form-grp { margin-bottom:22px; }
+    .form-grp label { display:block; font-size:13px; font-weight:600; color:#475569; margin-bottom:8px; }
+    .form-grp textarea, .form-grp input[type=text] {
+        width:100%; padding:12px 16px; border:1px solid #e2e8f0; border-radius:10px;
+        font-size:15px; color:#111827; transition:.2s; box-sizing:border-box;
+    }
+    .form-grp textarea:focus, .form-grp input[type=text]:focus {
+        outline:none; border-color:#0d9488; box-shadow:0 0 0 3px rgba(13,148,136,.1);
+    }
+    .opts-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .opt-block { background:#f0fdfa; border:1px solid #99f6e4; border-radius:12px; padding:16px; }
+    .opt-block label { display:block; font-size:12px; font-weight:700; color:#0f766e; margin-bottom:8px; text-transform:uppercase; }
+    .opt-block input[type=text] { width:100%; padding:10px 14px; border:1px solid #ccfbf1; border-radius:8px; font-size:14px; color:#111827; box-sizing:border-box; }
+    .correct-row { display:flex; align-items:center; gap:8px; margin-top:10px; }
+    .correct-row input[type=checkbox] { width:16px; height:16px; accent-color:#0d9488; }
+    .correct-row span { font-size:13px; color:#374151; font-weight:500; }
+    .btn-row  { display:flex; justify-content:space-between; align-items:center; margin-top:28px; }
+    .btn-save { padding:13px 32px; background:#0d9488; color:#fff; border:none; border-radius:12px; font-size:15px; font-weight:700; cursor:pointer; transition:.2s; }
+    .btn-save:hover { background:#0f766e; transform:translateY(-1px); }
+    .btn-cancel { padding:12px 24px; background:#f1f5f9; color:#374151; border-radius:12px; font-weight:600; text-decoration:none; font-size:14px; }
+    .btn-cancel:hover { background:#e2e8f0; }
+</style>
+
+<div class="eq-wrap">
+    <div class="eq-card">
+        <div class="eq-top">
+            <h1>✏️ Edit Question</h1>
+            <p>Quiz: @Model.Quiz?.Title &nbsp;|&nbsp; Course: @Model.Quiz?.Course?.Title</p>
+        </div>
+        <div class="eq-body">
+            <form method="post" asp-action="EditQuestion">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="questionId" value="@Model.QuestionId" />
+
+                <div class="form-grp">
+                    <label>Question Text *</label>
+                    <textarea name="questionText" rows="3" required>@Model.QuestionText</textarea>
+                </div>
+
+                <div class="form-grp">
+                    <label>Answer Options</label>
+                    <div class="opts-grid">
+                        @for (int i = 0; i < 4; i++)
+                        {
+                            var opt = opts[i];
+                            int idx = i + 1;
+                            <div class="opt-block">
+                                <label>Option @idx</label>
+                                <input type="hidden" name="optionId@idx" value="@opt.OptionId" />
+                                <input type="text" name="option@idx" value="@opt.OptionText" placeholder="Option @idx" required />
+                                <div class="correct-row">
+                                    <input type="checkbox" name="correct@idx" id="ec@idx" value="true"
+                                           @(opt.IsCorrect ? "checked" : "") />
+                                    <span>Mark as correct</span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="btn-row">
+                    <a href="@Url.Action("ManageQuestions","Admin",new{id=Model.QuizId})" class="btn-cancel">← Cancel</a>
+                    <button type="submit" class="btn-save">💾 Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

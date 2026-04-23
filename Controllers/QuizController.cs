@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Project_BD.Database;
 using Project_BD.Models;
@@ -51,6 +51,12 @@ namespace Project_BD.Controllers
                 return RedirectToAction("Details", "Course", new { id = quiz.CourseId });
             }
 
+            if (quiz.Questions == null || quiz.Questions.Count < 1)
+            {
+                TempData["QuizError"] = "This quiz has no questions yet. Please contact the administrator.";
+                return RedirectToAction("Details", "Course", new { id = quiz.CourseId });
+            }
+
             return View(quiz);
         }
 
@@ -68,10 +74,17 @@ namespace Project_BD.Controllers
 
             if (quiz == null) return NotFound();
 
-            int totalQuestions = quiz.Questions!.Count;
+            if (quiz.Questions == null || quiz.Questions.Count < 1)
+            {
+                TempData["QuizError"] = "This quiz has no questions. Please contact the administrator.";
+                return RedirectToAction("Details", "Course", new { id = quiz.CourseId });
+            }
+
+            var targetQuestions = quiz.Questions.ToList();
+            int totalQuestions = targetQuestions.Count;
             int correctAnswers = 0;
 
-            foreach (var question in quiz.Questions)
+            foreach (var question in targetQuestions)
             {
                 string key = "question_" + question.QuestionId;
                 if (form.ContainsKey(key))

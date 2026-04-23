@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Project_BD.Models.Course>
+@model IEnumerable<Project_BD.Models.Course>
 
 @{
     ViewData["Title"] = "Professional Catalog";
@@ -40,7 +40,7 @@
         align-items: center;
     }
 
-    @media(max-width:992px) {
+    @@media (max-width: 768px) {
         .filter-bar {
             grid-template-columns: 1fr;
         }
@@ -312,7 +312,7 @@
     <div class="price-range-wrapper">
         <div class="range-labels">
             <span>Min Price</span>
-            <span id="priceDisplay">Max Price: $20,000</span>
+            <span id="priceDisplay">Max Price: ₹20,000</span>
         </div>
         <input type="range" class="price-slider" min="0" max="20000" step="100" value="20000" id="priceRange" />
     </div>
@@ -359,7 +359,7 @@
 
                 <div class="instructor-tag">
                     <img src="https://i.pravatar.cc/150?u=@(item.CourseId)" />
-                    <span>@(item.InstructorName ?? "Industry Expert")</span>
+                    <span>Industry Expert</span>
                 </div>
 
                 <div class="card-overlay">
@@ -370,7 +370,7 @@
                     <div class="card-footer">
                         <div class="price-group">
                             <span class="price-label">Fixed Price</span>
-                            <span class="price-val">$@item.Price</span>
+                            <span class="price-val">₹@item.Price</span>
                         </div>
                         <div class="btn-explore">Explore Course</div>
                     </div>
@@ -391,7 +391,7 @@
     <script>
         $(document).ready(function () {
             $('#priceRange').on('input', function () {
-                $('#priceDisplay').text('Max Price: $' + $(this).val());
+                $('#priceDisplay').text('Max Price: ₹' + $(this).val());
                 filterCourses();
             });
 
@@ -405,7 +405,7 @@
 
                 $('.premium-course-card').each(function () {
                     const title = $(this).find('.card-title').text().toLowerCase();
-                    const price = parseInt($(this).find('.price-val').text().replace('$', ''));
+                    const price = parseInt($(this).find('.price-val').text().replace('₹', ''));
 
                     if (title.includes(query) && price <= maxPrice) {
                         $(this).fadeIn();

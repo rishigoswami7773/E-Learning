@@ -1,0 +1,108 @@
+@model Project_BD.Models.Quiz
+@{
+    ViewData["Title"] = "Manage Questions";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<style>
+    .mq-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; flex-wrap:wrap; gap:12px; }
+    .mq-header h1 { font-size:24px; font-weight:700; color:#111827; }
+    .btn-add { padding:10px 22px; background:#2563eb; color:#fff; border-radius:10px; font-weight:600; text-decoration:none; font-size:14px; transition:.2s; display:inline-flex; align-items:center; gap:6px; }
+    .btn-add:hover { background:#1d4ed8; transform:translateY(-1px); }
+    .btn-back { padding:9px 18px; background:#f1f5f9; color:#374151; border-radius:10px; font-weight:600; text-decoration:none; font-size:14px; transition:.2s; }
+    .btn-back:hover { background:#e2e8f0; }
+    .quiz-info-bar { background:linear-gradient(135deg,#2563eb,#1d4ed8); color:#fff; padding:18px 24px; border-radius:14px; margin-bottom:24px; display:flex; align-items:center; gap:16px; }
+    .quiz-info-bar .qi-title { font-size:18px; font-weight:700; }
+    .quiz-info-bar .qi-course { font-size:13px; opacity:.85; }
+    .qi-badge { background:rgba(255,255,255,.2); padding:6px 16px; border-radius:20px; font-size:13px; font-weight:600; margin-left:auto; }
+    .q-card { background:#fff; border-radius:14px; border:1px solid #e5e7eb; margin-bottom:16px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,.04); transition:.2s; }
+    .q-card:hover { box-shadow:0 4px 16px rgba(0,0,0,.08); }
+    .q-card-header { display:flex; align-items:center; gap:12px; padding:16px 20px; border-bottom:1px solid #f1f5f9; }
+    .q-num { width:32px; height:32px; background:#eff6ff; color:#2563eb; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px; flex-shrink:0; }
+    .q-text { flex:1; font-weight:600; color:#111827; font-size:15px; }
+    .q-actions { display:flex; gap:8px; }
+    .btn-edit-q { padding:6px 16px; background:#f0fdf4; color:#15803d; border-radius:8px; font-size:12px; font-weight:600; text-decoration:none; transition:.2s; border:1px solid #bbf7d0; }
+    .btn-edit-q:hover { background:#dcfce7; }
+    .btn-del-q  { padding:6px 16px; background:#fef2f2; color:#dc2626; border-radius:8px; font-size:12px; font-weight:600; border:1px solid #fecaca; cursor:pointer; transition:.2s; }
+    .btn-del-q:hover { background:#fee2e2; }
+    .opt-list { display:grid; grid-template-columns:1fr 1fr; gap:8px; padding:14px 20px; }
+    .opt-item { display:flex; align-items:center; gap:8px; padding:8px 14px; border-radius:8px; font-size:13px; border:1px solid #e5e7eb; }
+    .opt-item.correct { background:#f0fdf4; border-color:#86efac; color:#15803d; font-weight:600; }
+    .opt-item.wrong   { background:#fafafa; color:#6b7280; }
+    .opt-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+    .opt-item.correct .opt-dot { background:#22c55e; }
+    .opt-item.wrong   .opt-dot { background:#d1d5db; }
+    .empty-state { text-align:center; padding:60px 20px; color:#9ca3af; }
+    .empty-state .es-icon { font-size:48px; margin-bottom:16px; }
+    .alert-success { background:#dcfce7; color:#15803d; padding:12px 20px; border-radius:10px; margin-bottom:20px; font-weight:600; }
+</style>
+
+@if (TempData["QuizSuccess"] != null)
+{
+    <div class="alert-success">✅ @TempData["QuizSuccess"]</div>
+}
+
+<div class="mq-header">
+    <h1>📋 Quiz Questions</h1>
+    <div style="display:flex;gap:10px;">
+        <a href="@Url.Action("ManageQuizzes","Admin")" class="btn-back">← All Quizzes</a>
+        <a href="@Url.Action("AddQuestion","Admin",new{id=Model.QuizId})" class="btn-add">+ Add Question</a>
+    </div>
+</div>
+
+<div class="quiz-info-bar">
+    <div>
+        <div class="qi-title">@Model.Title</div>
+        <div class="qi-course">Course: @Model.Course?.Title</div>
+    </div>
+    @{
+        int qCount = Model.Questions?.Count ?? 0;
+        bool ready = qCount >= 5;
+    }
+    <div class="qi-badge">@qCount Question@(qCount != 1 ? "s" : "") | @(ready ? "✅ Ready" : $"⚠ Need {5 - qCount} more")</div>
+</div>
+
+@if (Model.Questions == null || !Model.Questions.Any())
+{
+    <div class="empty-state">
+        <div class="es-icon">❓</div>
+        <p style="font-size:18px;font-weight:600;color:#374151;">No questions yet</p>
+        <p>Add at least 5 questions to activate this quiz.</p>
+        <a href="@Url.Action("AddQuestion","Admin",new{id=Model.QuizId})" class="btn-add" style="margin-top:16px;display:inline-flex;">+ Add First Question</a>
+    </div>
+}
+else
+{
+    int n = 1;
+    foreach (var q in Model.Questions)
+    {
+        <div class="q-card">
+            <div class="q-card-header">
+                <div class="q-num">@n</div>
+                <div class="q-text">@q.QuestionText</div>
+                <div class="q-actions">
+                    <a href="@Url.Action("EditQuestion","Admin",new{id=q.QuestionId})" class="btn-edit-q">✏ Edit</a>
+                    <form asp-action="DeleteQuestion" asp-route-id="@q.QuestionId" method="post"
+                          onsubmit="return confirm('Delete this question and its options?')">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn-del-q">🗑 Delete</button>
+                    </form>
+                </div>
+            </div>
+            @if (q.Options != null && q.Options.Any())
+            {
+                <div class="opt-list">
+                    @foreach (var opt in q.Options)
+                    {
+                        <div class="opt-item @(opt.IsCorrect ? "correct" : "wrong")">
+                            <div class="opt-dot"></div>
+                            <span>@opt.OptionText</span>
+                            @if (opt.IsCorrect) { <span style="margin-left:auto;font-size:11px;">✓ Correct</span> }
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+        n++;
+    }
+}

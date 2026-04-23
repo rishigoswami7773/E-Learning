@@ -1,0 +1,99 @@
+@model Project_BD.Models.Course
+
+@{
+    ViewData["Title"] = "Payment";
+}
+
+<style>
+    .payment-wrap {
+        max-width: 900px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    .payment-grid {
+        display: grid;
+        grid-template-columns: 1.2fr 1fr;
+        gap: 20px;
+    }
+
+    .payment-card {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        padding: 24px;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+    }
+
+    .pay-btn {
+        width: 100%;
+        border: none;
+        background: #2563eb;
+        color: #fff;
+        font-weight: 700;
+        padding: 12px;
+        border-radius: 10px;
+        cursor: pointer;
+    }
+
+    @("@media") (max-width: 840px) {
+        .payment-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="payment-wrap">
+    <h1 style="margin-bottom: 8px;">Secure Checkout</h1>
+    <p style="color:#6b7280; margin-bottom: 20px;">Complete payment to enroll in this course.</p>
+
+    <div class="payment-grid">
+        <div class="payment-card">
+            <h3 style="margin-top:0;">Billing Details</h3>
+            <form asp-action="ProcessPayment" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="courseId" value="@Model.CourseId" />
+
+                <label style="font-weight:600;">Card Holder Name</label>
+                <input type="text" required placeholder="Your full name" style="width:100%; margin:8px 0 12px; padding:10px; border:1px solid #d1d5db; border-radius:8px;" />
+
+                <label style="font-weight:600;">Card Number</label>
+                <input type="text" required minlength="16" maxlength="19" placeholder="1234 5678 9012 3456" style="width:100%; margin:8px 0 12px; padding:10px; border:1px solid #d1d5db; border-radius:8px;" />
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                    <div>
+                        <label style="font-weight:600;">Expiry</label>
+                        <input type="text" required placeholder="MM/YY" style="width:100%; margin:8px 0 12px; padding:10px; border:1px solid #d1d5db; border-radius:8px;" />
+                    </div>
+                    <div>
+                        <label style="font-weight:600;">CVV</label>
+                        <input type="password" required minlength="3" maxlength="4" placeholder="123" style="width:100%; margin:8px 0 12px; padding:10px; border:1px solid #d1d5db; border-radius:8px;" />
+                    </div>
+                </div>
+
+                <button type="submit" class="pay-btn">Pay ₹@Model.Price and Enroll</button>
+            </form>
+        </div>
+
+        <div class="payment-card">
+            <h3 style="margin-top:0;">Order Summary</h3>
+            <p style="margin-bottom:4px;"><strong>@Model.Title</strong></p>
+            <p style="margin-top:0; color:#6b7280;">@(Model.Category?.Name ?? "General")</p>
+            <hr style="border:none; border-top:1px solid #e5e7eb;" />
+            <div style="display:flex; justify-content:space-between;">
+                <span>Course Fee</span>
+                <strong>₹@Model.Price</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-top:10px;">
+                <span>Tax</span>
+                <strong>₹0</strong>
+            </div>
+            <hr style="border:none; border-top:1px solid #e5e7eb;" />
+            <div style="display:flex; justify-content:space-between; font-size:18px;">
+                <strong>Total</strong>
+                <strong>₹@Model.Price</strong>
+            </div>
+            <p style="color:#6b7280; font-size:13px; margin-top:16px;">After successful payment, enrollment is activated instantly.</p>
+        </div>
+    </div>
+</div>

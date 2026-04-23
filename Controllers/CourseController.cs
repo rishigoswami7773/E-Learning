@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Project_BD.Database;
 using Project_BD.Models;
@@ -71,20 +71,48 @@ namespace Project_BD.Controllers
             }
             ViewBag.IsEnrolled = isEnrolled;
             ViewBag.UserRole = userRole;
+            ViewBag.AverageRating = await _context.Reviews
+                .Where(r => r.CourseId == id)
+                .Select(r => (double?)r.Rating)
+                .AverageAsync() ?? 0;
+            ViewBag.TotalReviews = await _context.Reviews.CountAsync(r => r.CourseId == id);
+            ViewBag.Reviews = await _context.Reviews
+                .Where(r => r.CourseId == id)
+                .Include(r => r.User)
+                .OrderByDescending(r => r.ReviewId)
+                .ToListAsync();
+            ViewBag.MyReview = userId == null
+                ? null
+                : await _context.Reviews.FirstOrDefaultAsync(r => r.CourseId == id && r.UserId == userId);
 
             return View(course);
         }
 
-        // POST: Course/Enroll
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Enroll(int courseId)
+        // GET: Course/Payment/5
+        public async Task<IActionResult> Payment(int id)
         {
             int? userId = HttpContext.Session.GetInt32("UserId");
-            if (userId == null)
-            {
-                return RedirectToAction("Login", "Users");
-            }
+            if (userId == null) return RedirectToAction("Login", "Users");
+
+            var course = await _context.Courses.Include(c => c.Category).FirstOrDefaultAsync(c => c.CourseId == id);
+            if (course == null) return NotFound();
+
+            bool isAlreadyEnrolled = await _context.Enrollments.AnyAsync(e => e.CourseId == id && e.UserId == userId);
+            if (isAlreadyEnrolled) return RedirectToAction(nameof(Details), new { id });
+
+            return View(course);
+        }
+
+        // POST: Course/ProcessPayment
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ProcessPayment(int courseId)
+        {
+            int? userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null) return RedirectToAction("Login", "Users");
+
+            var course = await _context.Courses.FindAsync(courseId);
+            if (course == null) return NotFound();
 
             var isAlreadyEnrolled = await _context.Enrollments.AnyAsync(e => e.CourseId == courseId && e.UserId == userId);
             if (!isAlreadyEnrolled)
@@ -99,7 +127,16 @@ namespace Project_BD.Controllers
                 await _context.SaveChangesAsync();
             }
 
+            TempData["SuccessMessage"] = "Payment successful! You are now enrolled in this course.";
             return RedirectToAction(nameof(Details), new { id = courseId });
+        }
+
+        // POST: Course/Enroll
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Enroll(int courseId)
+        {
+            return RedirectToAction(nameof(Payment), new { id = courseId });
         }
 
         // GET: Course/WatchLesson/5

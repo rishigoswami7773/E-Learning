@@ -1,0 +1,83 @@
+@model IEnumerable<Project_BD.Models.Quiz>
+@{
+    ViewData["Title"] = "Manage Quizzes";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<style>
+    .qz-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:28px; }
+    .qz-header h1 { font-size:26px; font-weight:700; color:#111827; }
+    .qz-table { width:100%; border-collapse:collapse; background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 4px 24px rgba(0,0,0,.06); }
+    .qz-table thead { background:linear-gradient(135deg,#2563eb,#1d4ed8); }
+    .qz-table thead th { padding:16px 20px; color:#fff; font-weight:600; font-size:13px; text-transform:uppercase; letter-spacing:.5px; text-align:left; }
+    .qz-table tbody tr { border-bottom:1px solid #f1f5f9; transition:.15s; }
+    .qz-table tbody tr:hover { background:#f8fafc; }
+    .qz-table td { padding:16px 20px; font-size:14px; color:#374151; }
+    .badge-q { display:inline-flex; align-items:center; gap:6px; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600; }
+    .badge-ok  { background:#dcfce7; color:#15803d; }
+    .badge-bad { background:#fef2f2; color:#dc2626; }
+    .btn-manage { padding:7px 18px; background:#2563eb; color:#fff; border-radius:8px; font-size:13px; font-weight:600; text-decoration:none; transition:.2s; }
+    .btn-manage:hover { background:#1d4ed8; }
+</style>
+
+<div class="qz-header">
+    <h1>🗂️ Manage Quizzes</h1>
+</div>
+
+@if (TempData["QuizSuccess"] != null)
+{
+    <div style="background:#dcfce7;color:#15803d;padding:12px 20px;border-radius:10px;margin-bottom:20px;font-weight:600;">
+        ✅ @TempData["QuizSuccess"]
+    </div>
+}
+
+<table class="qz-table">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Quiz Title</th>
+            <th>Course</th>
+            <th>Questions</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{ int row = 1; }
+        @foreach (var quiz in Model)
+        {
+            int qCount = quiz.Questions?.Count ?? 0;
+            bool ready = qCount >= 5;
+            <tr>
+                <td>@row</td>
+                <td style="font-weight:600;">@quiz.Title</td>
+                <td>@quiz.Course?.Title</td>
+                <td>
+                    <span class="badge-q @(ready ? "badge-ok" : "badge-bad")">
+                        @(ready ? "✓" : "⚠") @qCount Question@(qCount != 1 ? "s" : "")
+                    </span>
+                </td>
+                <td>
+                    @if (ready)
+                    {
+                        <span style="color:#15803d;font-weight:600;">✅ Ready</span>
+                    }
+                    else
+                    {
+                        <span style="color:#dc2626;font-weight:600;">⚠ Needs @(5 - qCount) more</span>
+                    }
+                </td>
+                <td>
+                    <a href="@Url.Action("ManageQuestions","Admin",new{id=quiz.QuizId})" class="btn-manage">
+                        Manage Questions
+                    </a>
+                </td>
+            </tr>
+            row++;
+        }
+        @if (!Model.Any())
+        {
+            <tr><td colspan="6" style="text-align:center;color:#9ca3af;padding:40px;">No quizzes found.</td></tr>
+        }
+    </tbody>
+</table>

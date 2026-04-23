@@ -5,6 +5,28 @@
     ViewData["Title"] = "Manage Users";
 }
 
+<style>
+    .mu-toast {
+        position:fixed; top:24px; right:24px; z-index:9999;
+        background:#059669; color:white;
+        padding:16px 24px; border-radius:14px; font-weight:700; font-size:15px;
+        display:flex; align-items:center; gap:12px;
+        box-shadow:0 8px 32px rgba(5,150,105,.35);
+        animation:muSlide .4s ease;
+    }
+    @@keyframes muSlide { from{opacity:0;transform:translateX(60px);} to{opacity:1;transform:translateX(0);} }
+    .user-row:hover { background:#f8fafc; }
+</style>
+
+@if (TempData["UserSuccess"] != null)
+{
+    <div class="mu-toast">
+        <i class="fas fa-circle-check" style="font-size:20px;"></i>
+        <span>@TempData["UserSuccess"]</span>
+        <button onclick="this.parentElement.remove()" style="background:none;border:none;color:white;cursor:pointer;margin-left:8px;font-size:18px;">&times;</button>
+    </div>
+}
+
 <div class="content-header animate-fade-in">
     <h1>Manage Users & Roles</h1>
     <p>View and manage all platform users, students, and instructors.</p>
@@ -58,11 +80,11 @@
         <h3>User Directory (@Model.Count())</h3>
         <div style="display: flex; gap: 16px;">
             <div style="position: relative;">
-                <i class="fas fa-search"
-                    style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 13px;"></i>
-                <input type="text" placeholder="Search users..."
-                    style="padding: 10px 16px 10px 40px; border: 1px solid var(--border-color); border-radius: 12px; font-size: 14px; width: 280px; background: #f8fafc; outline: none; transition: var(--transition);"
-                    onfocus="this.style.borderColor='var(--primary)'; this.style.background='white'" />
+                <i class="fas fa-search" style="position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--text-muted); font-size:13px;"></i>
+                <input type="text" id="userSearch" placeholder="Search by name or email..."
+                    style="padding:10px 16px 10px 40px; border:1px solid var(--border-color); border-radius:12px; font-size:14px; width:280px; background:#f8fafc; outline:none; transition:var(--transition);"
+                    onfocus="this.style.borderColor='var(--primary)'; this.style.background='white'"
+                    oninput="filterUsers(this.value)" />
             </div>
             <a asp-controller="Admin" asp-action="CreateUser"
                 style="background: var(--sidebar-active-bg); color: white; text-decoration: none; padding: 10px 20px; border-radius: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 14px; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);">
@@ -82,14 +104,13 @@
                     <th style="text-align: right;">Operations</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="userTableBody">
                 @foreach (var user in Model)
                 {
-                    <tr>
+                    <tr class="user-row" data-name="@user.Name?.ToLower()" data-email="@user.Email?.ToLower()">
                         <td>
                             <div class="user-cell">
-                                <div class="user-avatar"
-                                    style="background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);">
+                                <div class="user-avatar" style="background:linear-gradient(135deg,#e0e7ff 0%,#c7d2fe 100%);">
                                     @((user.Name ?? "U").FirstOrDefault())
                                 </div>
                                 <div class="user-info">
@@ -99,47 +120,36 @@
                             </div>
                         </td>
                         <td>
-                            @if (user.Role == "Admin")
-                            {
-                                <span class="badge badge-admin"><i class="fas fa-crown" style="font-size: 10px;"></i>
-                                    @user.Role</span>
-                            }
-                            else if (user.Role == "Instructor")
-                            {
-                                <span class="badge badge-instructor"><i class="fas fa-star" style="font-size: 10px;"></i>
-                                    @user.Role</span>
-                            }
-                            else
-                            {
-                                <span class="badge badge-student"><i class="fas fa-graduation-cap" style="font-size: 10px;"></i>
-                                    @user.Role</span>
+                            @if (user.Role == "Admin") {
+                                <span class="badge badge-admin"><i class="fas fa-crown" style="font-size:10px;"></i> @user.Role</span>
+                            } else if (user.Role == "Instructor") {
+                                <span class="badge badge-instructor"><i class="fas fa-star" style="font-size:10px;"></i> @user.Role</span>
+                            } else {
+                                <span class="badge badge-student"><i class="fas fa-graduation-cap" style="font-size:10px;"></i> @user.Role</span>
                             }
                         </td>
                         <td>
                             <span class="badge badge-success">
-                                <div style="width: 6px; height: 6px; background: currentColor; border-radius: 50%;"></div>
-                                Active
+                                <div style="width:6px;height:6px;background:currentColor;border-radius:50%;"></div> Active
                             </span>
                         </td>
-                        <td style="color: var(--text-muted); font-weight: 700; font-family: monospace;">
-                            #U-@user.UserId.ToString("D4")
-                        </td>
-                        <td style="text-align: right;">
-                            <div style="display: flex; gap: 4px; justify-content: flex-end;">
+                        <td style="color:var(--text-muted);font-weight:700;font-family:monospace;">#U-@user.UserId.ToString("D4")</td>
+                        <td style="text-align:right;">
+                            <div style="display:flex;gap:4px;justify-content:flex-end;">
                                 <a asp-action="EditUser" asp-route-id="@user.UserId"
-                                    style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 10px; color: var(--text-muted); transition: var(--transition);"
-                                    onmouseover="this.style.background='#f1f5f9'; this.style.color='var(--primary)'"
-                                    onmouseout="this.style.background='transparent'; this.style.color='var(--text-muted)'">
+                                   title="Edit User"
+                                   style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:10px;color:var(--text-muted);transition:var(--transition);"
+                                   onmouseover="this.style.background='#f1f5f9';this.style.color='var(--primary)'"
+                                   onmouseout="this.style.background='transparent';this.style.color='var(--text-muted)'">
                                     <i class="fas fa-pen-to-square"></i>
                                 </a>
-                                <form asp-action="DeleteUser" asp-route-id="@user.UserId" method="post"
-                                    onsubmit="return confirm('Are you sure you want to delete this user?');"
-                                    style="display: inline; margin: 0;">
+                                <form asp-action="DeleteUser" asp-route-id="@user.UserId" method="post" style="display:inline;margin:0;">
                                     @Html.AntiForgeryToken()
-                                    <button type="submit"
-                                        style="width: 36px; height: 36px; background: none; border: none; border-radius: 10px; color: var(--text-muted); cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center;"
-                                        onmouseover="this.style.background='#fee2e2'; this.style.color='var(--danger)'"
-                                        onmouseout="this.style.background='transparent'; this.style.color='var(--text-muted)'">
+                                    <button type="submit" title="Delete User"
+                                            style="width:36px;height:36px;background:none;border:none;border-radius:10px;color:var(--text-muted);cursor:pointer;transition:var(--transition);display:flex;align-items:center;justify-content:center;"
+                                            onmouseover="this.style.background='#fee2e2';this.style.color='var(--danger)'"
+                                            onmouseout="this.style.background='transparent';this.style.color='var(--text-muted)'"
+                                            onclick="return confirm('Delete this user permanently?')">
                                         <i class="fas fa-trash-can"></i>
                                     </button>
                                 </form>
@@ -147,6 +157,11 @@
                         </td>
                     </tr>
                 }
+                <tr id="noResults" style="display:none;">
+                    <td colspan="5" style="text-align:center;padding:40px;color:var(--text-muted);font-weight:600;">
+                        <i class="fas fa-search" style="margin-right:8px;"></i>No users match your search.
+                    </td>
+                </tr>
             </tbody>
         </table>
     </div>
@@ -165,3 +180,20 @@
     </div>
 </div>
 
+@section Scripts {
+<script>
+function filterUsers(query) {
+    const q = query.toLowerCase().trim();
+    const rows = document.querySelectorAll('#userTableBody .user-row');
+    let visible = 0;
+    rows.forEach(row => {
+        const name  = row.dataset.name  || '';
+        const email = row.dataset.email || '';
+        const show  = !q || name.includes(q) || email.includes(q);
+        row.style.display = show ? '' : 'none';
+        if (show) visible++;
+    });
+    document.getElementById('noResults').style.display = visible === 0 ? '' : 'none';
+}
+</script>
+}

@@ -89,13 +89,24 @@
         <p style="color: #6b7280;">Group your courses into categories</p>
     </div>
 
-    <form asp-action="Create">
+    <form asp-action="Create" enctype="multipart/form-data">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
         <div class="form-group">
             <label asp-for="Name"></label>
             <input asp-for="Name" class="form-control" placeholder="e.g. Programming, Design, Business" />
             <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Description"></label>
+            <textarea asp-for="Description" class="form-control" rows="3" placeholder="Category description..."></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label>Category Image</label>
+            <input type="file" name="ImageFile" class="form-control" accept="image/*" />
         </div>
 
         <button type="submit" class="btn-submit">Create Category</button>

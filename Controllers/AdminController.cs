@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using System.Security.Cryptography;
+using System.Text;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Project_BD.Database;
 using Project_BD.Models;
@@ -82,10 +84,22 @@ namespace Project_BD.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateUser(User user)
         {
+            // Remove optional fields from validation
+            ModelState.Remove("Mobile");
+            ModelState.Remove("Gender");
+            ModelState.Remove("Address");
+            ModelState.Remove("PhotoPath");
+
             if (ModelState.IsValid)
             {
+                // Hash the password exactly like the login does
+                using var sha256 = System.Security.Cryptography.SHA256.Create();
+                byte[] hashedBytes = sha256.ComputeHash(System.Text.Encoding.UTF8.GetBytes(user.Password));
+                user.Password = Convert.ToBase64String(hashedBytes);
+
                 _context.Users.Add(user);
                 await _context.SaveChangesAsync();
+                TempData["UserSuccess"] = $"✅ User '{user.Name}' ({user.Role}) created successfully!";
                 return RedirectToAction(nameof(ManageUsers));
             }
             return View(user);
@@ -149,53 +163,156 @@ namespace Project_BD.Controllers
             return View(courses);
         }
 
-        public async Task<IActionResult> CourseApproval()
+        public async Task<IActionResult> CourseApproval(string? filter = "pending")
         {
-            var courses = await _context.Courses.Include(c => c.Category).Where(c => !c.IsApproved).ToListAsync();
+            ViewBag.Filter = filter ?? "pending";
+            var query = _context.Courses.Include(c => c.Category).AsQueryable();
+            if (filter == "approved")
+                query = query.Where(c => c.IsApproved);
+            else
+                query = query.Where(c => !c.IsApproved);
+
+            ViewBag.PendingCount = await _context.Courses.CountAsync(c => !c.IsApproved);
+            ViewBag.ApprovedCount = await _context.Courses.CountAsync(c => c.IsApproved);
+
+            var courses = await query.OrderByDescending(c => c.CourseId).ToListAsync();
             return View(courses);
         }
 
         [HttpPost]
-        public async Task<IActionResult> ApproveCourse(int id)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ApproveCourse(int id, string? returnUrl = null)
         {
             var course = await _context.Courses.FindAsync(id);
             if (course != null)
             {
                 course.IsApproved = true;
                 await _context.SaveChangesAsync();
+                TempData["ApprovalSuccess"] = $"✅ Course '{course.Title}' has been approved successfully!";
             }
+            else
+            {
+                TempData["ApprovalError"] = "Course not found.";
+            }
+
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                return Redirect(returnUrl);
             return RedirectToAction(nameof(CourseApproval));
         }
 
         [HttpPost]
-        public async Task<IActionResult> RejectCourse(int id)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RejectCourse(int id, string? returnUrl = null)
         {
             var course = await _context.Courses.FindAsync(id);
             if (course != null)
             {
-                _context.Courses.Remove(course); // Rejecting removes it in this simple version
+                string title = course.Title;
+                _context.Courses.Remove(course);
                 await _context.SaveChangesAsync();
+                TempData["ApprovalSuccess"] = $"🗑️ Course '{title}' has been rejected and removed.";
             }
+            else
+            {
+                TempData["ApprovalError"] = "Course not found.";
+            }
+
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                return Redirect(returnUrl);
             return RedirectToAction(nameof(CourseApproval));
         }
 
         public async Task<IActionResult> Profile()
         {
-            var userId = HttpContext.Session.GetInt32("UserId");
-
-            // If session is missing or strictly system admin
-            if (!userId.HasValue || userId == 0)
-            {
-                var adminName = HttpContext.Session.GetString("UserName") ?? "System Admin";
-                return View(new User { Name = adminName, Email = "admin@gmail.com", Role = "Admin" });
-            }
-
-            var user = await _context.Users.FindAsync(userId.Value);
+            var user = await ResolveAdminUserForProfileAsync();
             if (user == null)
             {
+                if (HttpContext.Session.GetString("UserRole") != "Admin")
+                {
+                    return RedirectToAction("Login", "Users");
+                }
+
+                var adminName = HttpContext.Session.GetString("UserName") ?? "System Admin";
+                return View(new AdminProfileUpdateViewModel
+                {
+                    Name = adminName,
+                    Email = HttpContext.Session.GetString("UserEmail") ?? "admin@gmail.com",
+                    Role = "Admin",
+                    Gender = "Other",
+                    Mobile = string.Empty,
+                    Address = string.Empty
+                });
+            }
+
+            return View(new AdminProfileUpdateViewModel
+            {
+                Name = user.Name,
+                Email = user.Email,
+                Mobile = user.Mobile,
+                Gender = user.Gender,
+                Address = user.Address,
+                Role = user.Role ?? "Admin",
+                PhotoPath = user.PhotoPath
+            });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Profile(AdminProfileUpdateViewModel model, IFormFile? photo)
+        {
+            var user = await ResolveAdminUserForProfileAsync();
+            if (user == null)
+            {
+                TempData["AdminProfileError"] = "Session expired. Please login again.";
                 return RedirectToAction("Login", "Users");
             }
-            return View(user);
+
+            model.Email = user.Email;
+            model.Role = user.Role ?? "Admin";
+            model.PhotoPath = user.PhotoPath;
+            if (!ModelState.IsValid)
+            {
+                TempData["AdminProfileError"] = "Please fix validation errors and try again.";
+                return View(model);
+            }
+
+            user.Name = model.Name?.Trim() ?? user.Name;
+            user.Mobile = model.Mobile?.Trim() ?? user.Mobile;
+            user.Gender = model.Gender?.Trim() ?? user.Gender;
+            user.Address = model.Address?.Trim() ?? user.Address;
+
+            if (photo != null && photo.Length > 0)
+            {
+                string imagesRoot = Path.Combine(_hostEnvironment.WebRootPath, "images", "users");
+                if (!Directory.Exists(imagesRoot))
+                {
+                    Directory.CreateDirectory(imagesRoot);
+                }
+
+                string fileName = $"{Guid.NewGuid()}{Path.GetExtension(photo.FileName)}";
+                string filePath = Path.Combine(imagesRoot, fileName);
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await photo.CopyToAsync(stream);
+                }
+
+                if (!string.IsNullOrWhiteSpace(user.PhotoPath))
+                {
+                    string oldFilePath = Path.Combine(_hostEnvironment.WebRootPath, user.PhotoPath.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
+                    if (System.IO.File.Exists(oldFilePath))
+                    {
+                        System.IO.File.Delete(oldFilePath);
+                    }
+                }
+
+                user.PhotoPath = $"/images/users/{fileName}";
+            }
+
+            _context.Update(user);
+            await _context.SaveChangesAsync();
+            HttpContext.Session.SetString("UserName", user.Name);
+            TempData["AdminProfileSuccess"] = "Profile updated successfully.";
+            return RedirectToAction(nameof(Profile));
         }
 
         public async Task<IActionResult> Payments()
@@ -348,10 +465,221 @@ namespace Project_BD.Controllers
             return View();
         }
 
+        // ---------------------------------------------------------------
+        // QUIZ MANAGEMENT
+        // ---------------------------------------------------------------
+
+        // GET: Admin/ManageQuizzes
+        public async Task<IActionResult> ManageQuizzes()
+        {
+            var quizzes = await _context.Quizzes
+                .Include(q => q.Course)
+                .Include(q => q.Questions)
+                .OrderBy(q => q.Course!.Title)
+                .ToListAsync();
+            return View(quizzes);
+        }
+
+        // GET: Admin/ManageQuestions/5  (quizId)
+        public async Task<IActionResult> ManageQuestions(int id)
+        {
+            var quiz = await _context.Quizzes
+                .Include(q => q.Course)
+                .Include(q => q.Questions!)
+                    .ThenInclude(q => q.Options)
+                .FirstOrDefaultAsync(q => q.QuizId == id);
+
+            if (quiz == null) return NotFound();
+            return View(quiz);
+        }
+
+        // GET: Admin/AddQuestion/5  (quizId)
+        public async Task<IActionResult> AddQuestion(int id)
+        {
+            var quiz = await _context.Quizzes.Include(q => q.Course).FirstOrDefaultAsync(q => q.QuizId == id);
+            if (quiz == null) return NotFound();
+            ViewBag.Quiz = quiz;
+            return View();
+        }
+
+        // POST: Admin/AddQuestion
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddQuestion(int quizId, string questionText,
+            string option1, bool correct1,
+            string option2, bool correct2,
+            string option3, bool correct3,
+            string option4, bool correct4)
+        {
+            if (string.IsNullOrWhiteSpace(questionText))
+            {
+                TempData["QuizMsg"] = "Question text is required.";
+                return RedirectToAction(nameof(AddQuestion), new { id = quizId });
+            }
+
+            var question = new Question { QuestionText = questionText.Trim(), QuizId = quizId };
+            _context.Questions.Add(question);
+            await _context.SaveChangesAsync();
+
+            var options = new[]
+            {
+                new Option { OptionText = option1?.Trim() ?? "", IsCorrect = correct1, QuestionId = question.QuestionId },
+                new Option { OptionText = option2?.Trim() ?? "", IsCorrect = correct2, QuestionId = question.QuestionId },
+                new Option { OptionText = option3?.Trim() ?? "", IsCorrect = correct3, QuestionId = question.QuestionId },
+                new Option { OptionText = option4?.Trim() ?? "", IsCorrect = correct4, QuestionId = question.QuestionId }
+            };
+            _context.Options.AddRange(options.Where(o => !string.IsNullOrWhiteSpace(o.OptionText)));
+            await _context.SaveChangesAsync();
+
+            TempData["QuizSuccess"] = "Question added successfully!";
+            return RedirectToAction(nameof(ManageQuestions), new { id = quizId });
+        }
+
+        // GET: Admin/EditQuestion/5  (questionId)
+        public async Task<IActionResult> EditQuestion(int id)
+        {
+            var question = await _context.Questions
+                .Include(q => q.Options)
+                .Include(q => q.Quiz)
+                    .ThenInclude(q => q!.Course)
+                .FirstOrDefaultAsync(q => q.QuestionId == id);
+
+            if (question == null) return NotFound();
+            return View(question);
+        }
+
+        // POST: Admin/EditQuestion
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditQuestion(int questionId, string questionText,
+            int optionId1, string option1, bool correct1,
+            int optionId2, string option2, bool correct2,
+            int optionId3, string option3, bool correct3,
+            int optionId4, string option4, bool correct4)
+        {
+            var question = await _context.Questions
+                .Include(q => q.Options)
+                .FirstOrDefaultAsync(q => q.QuestionId == questionId);
+
+            if (question == null) return NotFound();
+
+            question.QuestionText = questionText?.Trim() ?? question.QuestionText;
+
+            var updates = new[]
+            {
+                (optionId1, option1, correct1),
+                (optionId2, option2, correct2),
+                (optionId3, option3, correct3),
+                (optionId4, option4, correct4)
+            };
+
+            foreach (var (oid, oText, oCorrect) in updates)
+            {
+                var opt = question.Options?.FirstOrDefault(o => o.OptionId == oid);
+                if (opt != null)
+                {
+                    opt.OptionText = oText?.Trim() ?? opt.OptionText;
+                    opt.IsCorrect  = oCorrect;
+                }
+            }
+
+            await _context.SaveChangesAsync();
+            TempData["QuizSuccess"] = "Question updated successfully!";
+            return RedirectToAction(nameof(ManageQuestions), new { id = question.QuizId });
+        }
+
+        // POST: Admin/DeleteQuestion/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteQuestion(int id)
+        {
+            var question = await _context.Questions
+                .Include(q => q.Options)
+                .FirstOrDefaultAsync(q => q.QuestionId == id);
+
+            if (question != null)
+            {
+                if (question.Options != null)
+                    _context.Options.RemoveRange(question.Options);
+                _context.Questions.Remove(question);
+                await _context.SaveChangesAsync();
+                TempData["QuizSuccess"] = "Question deleted.";
+            }
+
+            int quizId = question?.QuizId ?? 0;
+            return RedirectToAction(nameof(ManageQuestions), new { id = quizId });
+        }
+
         public async Task<IActionResult> Notifications()
         {
             var messages = await _context.ContactMessages.OrderByDescending(m => m.SentAt).ToListAsync();
             return View(messages);
+        }
+
+        /// <summary>
+        /// Resolves the logged-in admin user. Repairs sessions where UserId was 0 (old built-in admin login).
+        /// </summary>
+        private async Task<User?> ResolveAdminUserForProfileAsync()
+        {
+            if (HttpContext.Session.GetString("UserRole") != "Admin")
+                return null;
+
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId.HasValue && userId.Value > 0)
+            {
+                var byId = await _context.Users.FindAsync(userId.Value);
+                if (byId != null)
+                    return byId;
+            }
+
+            var email = HttpContext.Session.GetString("UserEmail");
+            if (string.IsNullOrWhiteSpace(email))
+                return null;
+
+            var byEmail = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            if (byEmail != null)
+            {
+                HttpContext.Session.SetInt32("UserId", byEmail.UserId);
+                return byEmail;
+            }
+
+            if (email.Equals("admin@gmail.com", StringComparison.OrdinalIgnoreCase))
+            {
+                var created = await EnsureBuiltinAdminUserAsync();
+                HttpContext.Session.SetInt32("UserId", created.UserId);
+                return created;
+            }
+
+            return null;
+        }
+
+        private async Task<User> EnsureBuiltinAdminUserAsync()
+        {
+            const string adminEmail = "admin@gmail.com";
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == adminEmail);
+            if (user != null)
+                return user;
+
+            user = new User
+            {
+                Name = "System Admin",
+                Email = adminEmail,
+                Password = HashAdminPassword("admin123"),
+                Role = "Admin",
+                Mobile = "0000000000",
+                Gender = "Other",
+                Address = ""
+            };
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+            return user;
+        }
+
+        private static string HashAdminPassword(string password)
+        {
+            using var sha256 = SHA256.Create();
+            byte[] hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+            return Convert.ToBase64String(hashedBytes);
         }
     }
 }

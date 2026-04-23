@@ -23,6 +23,14 @@ namespace Project_BD.Controllers
             return View(categories);
         }
 
+        public IActionResult ReactApp()
+        {
+            return PhysicalFile(
+                Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/react/index.html"),
+                "text/html"
+            );
+        }
+
         public IActionResult Privacy()
         {
             return View();

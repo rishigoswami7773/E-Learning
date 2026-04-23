@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Project_BD.Database;
 using Project_BD.Models;
@@ -8,10 +8,12 @@ namespace Project_BD.Controllers
     public class CategoryController : Controller
     {
         private readonly E_db _context;
+        private readonly IWebHostEnvironment _hostEnvironment;
 
-        public CategoryController(E_db context)
+        public CategoryController(E_db context, IWebHostEnvironment hostEnvironment)
         {
             _context = context;
+            _hostEnvironment = hostEnvironment;
         }
 
         // GET: Category
@@ -29,10 +31,30 @@ namespace Project_BD.Controllers
         // POST: Category/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Category category)
+        public async Task<IActionResult> Create(Category category, IFormFile? ImageFile)
         {
             if (ModelState.IsValid)
             {
+                if (ImageFile != null && ImageFile.Length > 0)
+                {
+                    string wwwRootPath = _hostEnvironment.WebRootPath;
+                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(ImageFile.FileName);
+                    string categoryPath = Path.Combine(wwwRootPath, @"images\categories");
+
+                    if (!Directory.Exists(categoryPath))
+                    {
+                        Directory.CreateDirectory(categoryPath);
+                    }
+
+                    string filePath = Path.Combine(categoryPath, fileName);
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await ImageFile.CopyToAsync(fileStream);
+                    }
+
+                    category.ImageUrl = @"/images/categories/" + fileName;
+                }
+
                 _context.Add(category);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -53,7 +75,7 @@ namespace Project_BD.Controllers
         // POST: Category/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Category category)
+        public async Task<IActionResult> Edit(int id, Category category, IFormFile? ImageFile)
         {
             if (id != category.CategoryId) return NotFound();
 
@@ -61,6 +83,28 @@ namespace Project_BD.Controllers
             {
                 try
                 {
+                    if (ImageFile != null && ImageFile.Length > 0)
+                    {
+                        string wwwRootPath = _hostEnvironment.WebRootPath;
+                        string fileName = Guid.NewGuid().ToString() + Path.GetExtension(ImageFile.FileName);
+                        string categoryPath = Path.Combine(wwwRootPath, @"images\categories");
+
+                        if (!Directory.Exists(categoryPath))
+                        {
+                            Directory.CreateDirectory(categoryPath);
+                        }
+
+                        // Remove old image if needed (optional, keeping it simple here)
+
+                        string filePath = Path.Combine(categoryPath, fileName);
+                        using (var fileStream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await ImageFile.CopyToAsync(fileStream);
+                        }
+
+                        category.ImageUrl = @"/images/categories/" + fileName;
+                    }
+
                     _context.Update(category);
                     await _context.SaveChangesAsync();
                 }

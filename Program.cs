@@ -2,14 +2,29 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Project_BD.Database;
 
+// Resolve the correct root so static files (CSS/JS) always load,
+// whether launched via Visual Studio or from the bin/ output folder.
+static string ResolveContentRoot()
+{
+    // Walk up from AppContext.BaseDirectory until we find a folder containing wwwroot
+    var dir = new DirectoryInfo(AppContext.BaseDirectory);
+    while (dir != null)
+    {
+        if (Directory.Exists(Path.Combine(dir.FullName, "wwwroot")))
+            return dir.FullName;
+        dir = dir.Parent;
+    }
+    // Fallback: current working directory
+    return Directory.GetCurrentDirectory();
+}
+
+var contentRoot = ResolveContentRoot();
+
 var builder = WebApplication.CreateBuilder(new WebApplicationOptions
 {
     Args = args,
-    // This helps the app find the correct root folder even if run from the bin folder
-    ContentRootPath = Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"))
-        ? Directory.GetCurrentDirectory()
-        : AppContext.BaseDirectory,
-    WebRootPath = "wwwroot"
+    ContentRootPath = contentRoot,
+    WebRootPath = Path.Combine(contentRoot, "wwwroot")
 });
 
 // Add services to the container.

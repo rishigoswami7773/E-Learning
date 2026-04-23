@@ -1,0 +1,39 @@
+## ASP.NET Core .gitignore
+
+# Build output
+bin/
+obj/
+build_output.txt
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.vcxproj.filters
+
+# NuGet
+*.nupkg
+*.snupkg
+**/packages/*
+!**/packages/build/
+
+# Published output
+publish/
+**/publish/
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Rider
+.idea/
+
+# dotnet
+*.swp
+*~

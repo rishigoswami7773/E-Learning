@@ -20,7 +20,22 @@ namespace Project_BD.Models
         public string Password { get; set; }
 
         [Required]
-        public string? Role { get; set; } // Admin / Student / Instructor
+        [StringLength(20)]
+        [Phone]
+        public string Mobile { get; set; } = string.Empty;
+
+        [Required]
+        [StringLength(50)]
+        public string Gender { get; set; } = string.Empty;
+
+        [StringLength(500)]
+        public string Address { get; set; } = string.Empty;
+
+        [StringLength(500)]
+        public string? PhotoPath { get; set; }
+
+        [Required]
+        public string? Role { get; set; } = "Student"; // Admin / Student / Instructor
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 

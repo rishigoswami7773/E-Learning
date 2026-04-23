@@ -1,4 +1,4 @@
-@model Project_BD.Models.User
+@model Project_BD.Models.AdminProfileUpdateViewModel
 
 @{
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
@@ -10,19 +10,44 @@
     <p>Manage your administrative identity and security preferences.</p>
 </div>
 
+@if (TempData["AdminProfileSuccess"] != null)
+{
+    <div style="background: #dcfce7; color: #166534; padding: 12px 16px; border-radius: 10px; margin-top: 16px; font-weight: 700;">
+        @TempData["AdminProfileSuccess"]
+    </div>
+}
+@if (TempData["AdminProfileError"] != null)
+{
+    <div style="background: #fee2e2; color: #991b1b; padding: 12px 16px; border-radius: 10px; margin-top: 16px; font-weight: 700;">
+        @TempData["AdminProfileError"]
+    </div>
+}
+
 <div style="display: grid; grid-template-columns: 350px 1fr; gap: 32px; margin-top: 32px;" class="animate-fade-in"
     style="animation-delay: 0.1s;">
+    <form asp-action="Profile" method="post" enctype="multipart/form-data" style="display: contents;">
+    @Html.AntiForgeryToken()
     <div class="card-section" style="text-align: center; height: fit-content; padding: 40px 30px;">
         <div style="position: relative; width: 140px; height: 140px; margin: 0 auto 24px;">
-            <div
-                style="width: 100%; height: 100%; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 56px; font-weight: 800; box-shadow: 0 12px 24px rgba(99, 102, 241, 0.3); border: 4px solid white;">
-                @((Model?.Name ?? "A").FirstOrDefault())
-            </div>
+            @if (!string.IsNullOrWhiteSpace(Model?.PhotoPath))
+            {
+                <img src="@Model.PhotoPath" alt="Admin Photo"
+                    style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%; box-shadow: 0 12px 24px rgba(99, 102, 241, 0.3); border: 4px solid white;" />
+            }
+            else
+            {
+                <div
+                    style="width: 100%; height: 100%; background: linear-gradient(135deg, var(--primary) 0%, #1d4ed8 100%); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 56px; font-weight: 800; box-shadow: 0 12px 24px rgba(99, 102, 241, 0.3); border: 4px solid white;">
+                    @((Model?.Name ?? "A").FirstOrDefault())
+                </div>
+            }
             <div style="position: absolute; bottom: 5px; right: 5px; width: 36px; height: 36px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary); box-shadow: 0 4px 10px rgba(0,0,0,0.1); cursor: pointer; transition: var(--transition);"
                 onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
                 <i class="fas fa-camera"></i>
             </div>
         </div>
+        <input type="file" name="photo" accept="image/*" style="margin-bottom: 8px; width: 100%;" />
+        <span style="display:block; color:#6b7280; font-size:12px;">Upload JPG, PNG, or WEBP image.</span>
 
         <h3 style="font-size: 22px; font-weight: 800; color: var(--text-main); margin-bottom: 6px;">@(Model?.Name ??
             "Administrator")</h3>
@@ -51,28 +76,76 @@
             style="margin-bottom: 32px; font-size: 18px; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 10px;">
             <i class="fas fa-id-card" style="color: var(--primary);"></i> Primary Credentials
         </h3>
+        <div asp-validation-summary="ModelOnly" style="color: #b91c1c; margin-bottom: 18px; font-weight: 700;"></div>
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px;">
             <div style="display: flex; flex-direction: column; gap: 10px;">
                 <label
                     style="font-size: 13px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Display
                     Name</label>
-                <input type="text" value="@Model.Name" readonly
+                <input asp-for="Name" name="Name"
                     style="width: 100%; padding: 14px 18px; border: 1px solid var(--border-color); border-radius: 12px; background: #f8fafc; color: var(--text-main); font-weight: 600; outline: none;" />
+                <span asp-validation-for="Name" style="color:#b91c1c; font-size:12px; font-weight:700;"></span>
             </div>
             <div style="display: flex; flex-direction: column; gap: 10px;">
                 <label
                     style="font-size: 13px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Communication
                     Hub</label>
-                <input type="text" value="@Model.Email" readonly
+                <input asp-for="Email" readonly
                     style="width: 100%; padding: 14px 18px; border: 1px solid var(--border-color); border-radius: 12px; background: #f8fafc; color: var(--text-main); font-weight: 600; outline: none;" />
             </div>
             <div style="display: flex; flex-direction: column; gap: 10px;">
                 <label
                     style="font-size: 13px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Permission
                     Group</label>
-                <input type="text" value="@Model.Role" readonly
+                <input asp-for="Role" readonly
                     style="width: 100%; padding: 14px 18px; border: 1px solid var(--border-color); border-radius: 12px; background: #f8fafc; color: var(--text-main); font-weight: 600; outline: none;" />
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <label
+                    style="font-size: 13px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Mobile</label>
+                <input asp-for="Mobile" name="Mobile"
+                    style="width: 100%; padding: 14px 18px; border: 1px solid var(--border-color); border-radius: 12px; background: #f8fafc; color: var(--text-main); font-weight: 600; outline: none;" />
+                <span asp-validation-for="Mobile" style="color:#b91c1c; font-size:12px; font-weight:700;"></span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <label
+                    style="font-size: 13px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Gender</label>
+                <select asp-for="Gender" name="Gender"
+                    style="width: 100%; padding: 14px 18px; border: 1px solid var(--border-color); border-radius: 12px; background: #f8fafc; color: var(--text-main); font-weight: 600; outline: none;">
+                    @if (Model.Gender == "Male")
+                    {
+                        <option value="Male" selected>Male</option>
+                    }
+                    else
+                    {
+                        <option value="Male">Male</option>
+                    }
+                    @if (Model.Gender == "Female")
+                    {
+                        <option value="Female" selected>Female</option>
+                    }
+                    else
+                    {
+                        <option value="Female">Female</option>
+                    }
+                    @if (Model.Gender == "Other")
+                    {
+                        <option value="Other" selected>Other</option>
+                    }
+                    else
+                    {
+                        <option value="Other">Other</option>
+                    }
+                </select>
+                <span asp-validation-for="Gender" style="color:#b91c1c; font-size:12px; font-weight:700;"></span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 10px; grid-column: 1 / -1;">
+                <label
+                    style="font-size: 13px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Address</label>
+                <textarea asp-for="Address" name="Address" rows="3"
+                    style="width: 100%; padding: 14px 18px; border: 1px solid var(--border-color); border-radius: 12px; background: #f8fafc; color: var(--text-main); font-weight: 600; outline: none;"></textarea>
+                <span asp-validation-for="Address" style="color:#b91c1c; font-size:12px; font-weight:700;"></span>
             </div>
             <div style="display: flex; flex-direction: column; gap: 10px;">
                 <label
@@ -88,17 +161,22 @@
         <div
             style="margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--border-color); display: flex; gap: 16px;">
             <button
+                type="submit"
                 style="background: var(--sidebar-active-bg); color: white; border: none; padding: 14px 32px; border-radius: 14px; font-weight: 800; font-size: 14px; cursor: pointer; transition: var(--transition); box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);"
                 onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-                Save Account Changes
+                Save Profile Changes
             </button>
-            <button
+            <a asp-action="Profile"
                 style="background: white; border: 1px solid var(--border-color); color: var(--text-main); padding: 14px 32px; border-radius: 14px; font-weight: 800; font-size: 14px; cursor: pointer; transition: var(--transition);"
                 onmouseover="this.style.background='#f8fafc'; this.style.borderColor='var(--primary)'"
                 onmouseout="this.style.background='white'; this.style.borderColor='var(--border-color)'">
                 Reset Access Protocol
-            </button>
+            </a>
         </div>
     </div>
+    </form>
 </div>
 
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

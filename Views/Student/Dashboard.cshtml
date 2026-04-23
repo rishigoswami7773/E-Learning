@@ -1,265 +1,536 @@
+@model Project_BD.Models.User
+
 @{
-    ViewData["Title"] = "Student Dashboard";
+    ViewData["Title"] = "Student Profile";
     Layout = "_Layout";
 }
 
-@{
-    ViewData["Title"] = "Dashboard";
-    Layout = "~/Views/Shared/_AdminLayout.cshtml"; // ← Must match exact file name & path
-}
-
 <style>
-    .dashboard-container {
-        padding: 40px 8%;
-        min-height: 80vh;
+    :root {
+        --body-bg: #f5f7fa;
+        --card-bg: #ffffff;
+        --primary-blue: #3b82f6;
+        --dark-blue: #1e3a8a;
+        --text-dark: #1f2937;
+        --text-light: #6b7280;
+        --border-color: #e5e7eb;
     }
 
-    .profile-header {
-        background: white;
-        padding: 40px;
-        border-radius: 20px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    body {
+        background-color: var(--body-bg);
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .profile-container {
+        max-width: 1100px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    /* Hero Banner Area */
+    .hero-banner {
+        background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+        height: 200px;
+        border-radius: 20px 20px 0 0;
+        position: relative;
         display: flex;
         align-items: center;
-        gap: 30px;
-        margin-bottom: 40px;
-        border: 1px solid #f1f5f9;
-        animation: fadeIn 0.5s ease;
+        justify-content: center;
+        overflow: hidden;
     }
 
-    .profile-img-box {
-        width: 100px;
-        height: 100px;
-        background: #2563eb;
-        color: white;
+    .hero-banner::after {
+        content: "LEARN & GROW";
+        position: absolute;
+        font-size: 60px;
+        font-weight: 900;
+        color: rgba(255, 255, 255, 0.1);
+        text-transform: uppercase;
+        letter-spacing: 4px;
+    }
+
+    .profile-hero-card {
+        background: var(--card-bg);
+        border-radius: 0 0 20px 20px;
+        padding: 0 40px 30px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        margin-bottom: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+    }
+
+    .profile-info-main {
+        display: flex;
+        gap: 30px;
+        position: relative;
+        top: -40px;
+        align-items: flex-start;
+    }
+
+    .profile-pic-wrapper {
+        width: 140px;
+        height: 140px;
         border-radius: 50%;
+        background: white;
+        padding: 6px;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    .profile-pic {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+        background: #e5e7eb;
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 40px;
+        font-weight: bold;
+        color: var(--primary-blue);
+    }
+
+    .profile-details {
+        padding-top: 50px;
+    }
+
+    .profile-name {
+        font-size: 32px;
         font-weight: 800;
-        box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
+        color: var(--text-dark);
+        margin-bottom: 8px;
     }
 
-    .profile-info h1 {
-        font-size: 28px;
-        color: #1e293b;
-        margin-bottom: 5px;
+    .profile-badges {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        margin-bottom: 12px;
+        flex-wrap: wrap;
     }
 
-    .profile-info p {
-        color: #64748b;
-        font-size: 16px;
+    .badge-pill {
+        padding: 4px 12px;
+        border-radius: 50px;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
     }
 
+    .badge-student {
+        background: #e0e7ff;
+        color: var(--primary-blue);
+    }
+
+    .badge-verified {
+        background: #dcfce7;
+        color: #16a34a;
+    }
+
+    .badge-info {
+        color: var(--text-light);
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .btn-edit-profile {
+        background: var(--primary-blue);
+        color: white;
+        padding: 10px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 14px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: 0.2s;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-edit-profile:hover {
+        background: var(--dark-blue);
+    }
+
+    /* Layout Grid */
     .dashboard-grid {
         display: grid;
-        grid-template-columns: 2fr 1fr;
+        grid-template-columns: 300px 1fr;
         gap: 30px;
     }
 
-    .courses-section {
-        background: white;
-        padding: 30px;
+    /* Common Card Styles */
+    .dash-card {
+        background: var(--card-bg);
         border-radius: 20px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-        border: 1px solid #f1f5f9;
+        padding: 30px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        margin-bottom: 30px;
     }
 
-    .section-title {
-        font-size: 20px;
-        font-weight: 700;
-        color: #1e293b;
+    .card-title {
+        font-size: 18px;
+        font-weight: 800;
+        color: var(--dark-blue);
         margin-bottom: 25px;
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 10px;
     }
 
-    .enrolled-course-card {
+    /* Left Column Elements */
+    .profile-strength-box {
+        margin-bottom: 20px;
+    }
+
+    .strength-header {
         display: flex;
-        align-items: center;
-        gap: 20px;
-        padding: 20px;
-        border-radius: 12px;
-        background: #f8fafc;
-        margin-bottom: 15px;
-        transition: all 0.2s;
-        border: 1px solid transparent;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text-dark);
     }
 
-    .enrolled-course-card:hover {
-        transform: translateX(5px);
-        background: white;
-        border-color: #2563eb;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    .strength-perc {
+        color: var(--primary-blue);
     }
 
-    .course-icon {
-        width: 60px;
-        height: 60px;
+    .progress-bar-bg {
+        height: 6px;
         background: #e0e7ff;
-        color: #2563eb;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 12px;
+    }
+
+    .progress-bar-fill {
+        height: 100%;
+        background: var(--primary-blue);
+        width: 55%;
+    }
+
+    .strength-desc {
+        font-size: 12px;
+        color: var(--text-light);
+        line-height: 1.5;
+    }
+
+    .stats-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-bottom: 30px;
+    }
+
+    .stat-box {
+        text-align: center;
+        padding: 15px;
+        background: #f8fafc;
+        border-radius: 12px;
+    }
+
+    .stat-box h4 {
+        font-size: 24px;
+        color: var(--primary-blue);
+        font-weight: 800;
+        margin-bottom: 4px;
+    }
+
+    .stat-box span {
+        font-size: 10px;
+        color: var(--text-dark);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .contact-item {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .contact-icon {
+        width: 36px;
+        height: 36px;
+        background: #f1f5f9;
+        color: var(--primary-blue);
         border-radius: 10px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 24px;
-    }
-
-    .btn-resume {
-        margin-left: auto;
-        padding: 8px 16px;
-        background: #2563eb;
-        color: white;
-        text-decoration: none;
-        border-radius: 8px;
         font-size: 14px;
+        flex-shrink: 0;
+    }
+
+    .contact-icon.green {
+        color: #16a34a;
+        background: #dcfce7;
+    }
+
+    .contact-icon.orange {
+        color: #d97706;
+        background: #fef3c7;
+    }
+
+    .contact-detail p {
+        font-size: 10px;
+        text-transform: uppercase;
+        color: var(--text-light);
         font-weight: 700;
-        transition: 0.2s;
+        margin-bottom: 2px;
     }
 
-    .btn-resume:hover {
-        background: #1e40af;
+    .contact-detail h5 {
+        font-size: 14px;
+        color: var(--text-dark);
+        font-weight: 700;
+        line-height: 1.4;
     }
 
-    .empty-state {
-        text-align: center;
-        padding: 40px;
-        color: #94a3b8;
+    /* Right Column Elements */
+    .form-group {
+        margin-bottom: 20px;
     }
 
-    .stats-card {
+    .form-label {
+        display: block;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 8px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        background: #f8fafc;
+        font-size: 14px;
+        color: var(--text-dark);
+        transition: all 0.2s;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: var(--primary-blue);
         background: white;
-        padding: 30px;
-        border-radius: 20px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-        border: 1px solid #f1f5f9;
-        height: fit-content;
     }
 
-    @@keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(10px);
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+    
+    @@media (max-width: 900px) {
+        .dashboard-grid {
+            grid-template-columns: 1fr;
         }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
+        .profile-hero-card {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .profile-info-main {
+            flex-direction: column;
+            align-items: center;
+            top: -70px;
+            margin-bottom: -50px;
+        }
+        .profile-badges {
+            justify-content: center;
+        }
+        .btn-edit-profile {
+            margin-top: 20px;
         }
     }
 </style>
 
-<div class="dashboard-container">
-    <!-- Profile Header -->
-    <div class="profile-header">
-        <div class="profile-img-box">
-            @(ViewBag.UserName?.ToString().Substring(0, 1).ToUpper() ?? "U")
+<div class="profile-container">
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div style="background: #dcfce7; color: #16a34a; padding: 16px; border-radius: 12px; margin-bottom: 20px; font-weight: 600; text-align: center;">
+            <i class="fas fa-check-circle"></i> @TempData["SuccessMessage"]
         </div>
-        <div class="profile-info">
-            <h1>@ViewBag.UserName</h1>
-            <p>@ViewBag.UserEmail</p>
-            <div style="margin-top: 15px; display: flex; gap: 10px;">
-                <span
-                    style="padding: 4px 12px; background: #dcfce7; color: #166534; border-radius: 50px; font-size: 12px; font-weight: 700;">Student
-                    Account</span>
-                <span
-                    style="padding: 4px 12px; background: #f1f5f9; color: #475569; border-radius: 50px; font-size: 12px; font-weight: 700;">Active
-                    Learner</span>
+    }
+
+    <!-- Hero / Header -->
+    <div class="hero-banner"></div>
+    <div class="profile-hero-card">
+        <div class="profile-info-main">
+            <div class="profile-pic-wrapper">
+                @if (!string.IsNullOrEmpty(Model.PhotoPath))
+                {
+                    <img src="@Model.PhotoPath" class="profile-pic" alt="Profile Picture" />
+                }
+                else
+                {
+                    <div class="profile-pic">
+                        @(Model.Name?.Substring(0, 1).ToUpper() ?? "U")
+                    </div>
+                }
             </div>
+            <div class="profile-details">
+                <h1 class="profile-name">@Model.Name</h1>
+                <div class="profile-badges">
+                    <span class="badge-pill badge-student">STUDENT</span>
+                    <span class="badge-info"><i class="fas fa-map-marker-alt"></i> @(Model.Address?.Split(',').FirstOrDefault() ?? "Not specified")</span>
+                    <span class="badge-info"><i class="fas fa-envelope"></i> @Model.Email</span>
+                </div>
+                <div style="margin-top: 8px;">
+                    <span class="badge-pill badge-verified"><i class="fas fa-check-circle"></i> E-Learning Verified</span>
+                </div>
+            </div>
+        </div>
+        <div style="padding-bottom: 20px;">
+            <a asp-action="EditProfile" class="btn-edit-profile"><i class="fas fa-pen"></i> Edit Profile</a>
         </div>
     </div>
 
-    <!-- Dashboard Main -->
+    <!-- Main Grid -->
     <div class="dashboard-grid">
-        <!-- Courses List -->
-        <div class="courses-section">
-            <h2 class="section-title">
-                <i class="fas fa-graduation-cap"></i> My Enrolled Courses
-            </h2>
-
-            @if (ViewBag.EnrolledCourses != null && ((List<Project_BD.Models.Course>)ViewBag.EnrolledCourses).Any())
-            {
-                foreach (var course in (List<Project_BD.Models.Course>)ViewBag.EnrolledCourses)
-                {
-                    <div class="enrolled-course-card">
-                        <div class="course-icon">📘</div>
-                        <div style="flex: 1;">
-                            <h3 style="font-size: 16px; color: #1e293b; margin-bottom: 4px;">@course.Title</h3>
-                            <p style="font-size: 13px; color: #64748b;">Enrolled on @DateTime.Now.ToString("MMM dd, yyyy")</p>
-                            @if (ViewBag.PassedQuizzes != null && course.Quizzes != null && course.Quizzes.Any())
-                            {
-                                var quizId = course.Quizzes.First().QuizId;
-                                if (((List<int>)ViewBag.PassedQuizzes).Contains(quizId))
-                                {
-                                    <div style="margin-top: 10px; display: flex; align-items: center; gap: 8px;">
-                                        <span style="font-size: 12px; font-weight: 700; color: #16a34a; background: #dcfce7; padding: 2px 10px; border-radius: 4px;">Passed</span>
-                                        <a asp-controller="Quiz" asp-action="Certificate" asp-route-quizId="@quizId" 
-                                           style="font-size: 12px; font-weight: 800; color: #b45309; text-decoration: underline;">Claim Certificate</a>
-                                    </div>
-                                }
-                            }
-                        </div>
-                        <a asp-controller="Course" asp-action="Details" asp-route-id="@course.CourseId"
-                            class="btn-resume">Continue Learning</a>
+        <!-- Left Sidebar -->
+        <div class="sidebar">
+            <div class="dash-card">
+                <div class="profile-strength-box">
+                    <div class="strength-header">
+                        <span>Profile Strength</span>
+                        <span class="strength-perc">55%</span>
                     </div>
-                }
-            }
-            else
-            {
-                <div class="empty-state">
-                    <i class="fas fa-book-open" style="font-size: 48px; margin-bottom: 20px; opacity: 0.3;"></i>
-                    <h3>No courses enrolled yet</h3>
-                    <p style="margin-top: 10px; margin-bottom: 20px;">Explore our catalog and start your learning journey.
-                    </p>
-                    <a asp-controller="Course" asp-action="Index" class="profile-btn" style="display: inline-block;">Browse
-                        Courses</a>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill"></div>
+                    </div>
+                    <p class="strength-desc">Complete your profile to unlock all features and improve your visibility</p>
                 </div>
-            }
+            </div>
+
+            <div class="stats-row">
+                <div class="dash-card" style="margin-bottom: 0; padding: 20px;">
+                    <div class="stat-box">
+                        <h4>@(ViewBag.EnrolledCourses?.Count ?? 0)</h4>
+                        <span>COURSES</span>
+                    </div>
+                </div>
+                <div class="dash-card" style="margin-bottom: 0; padding: 20px;">
+                    <div class="stat-box">
+                        <h4>@(ViewBag.PassedQuizzes?.Count ?? 0)</h4>
+                        <span>CERTIFICATES</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dash-card">
+                <h3 class="card-title"><i class="fas fa-globe"></i> Contact Info</h3>
+                
+                <div class="contact-item">
+                    <div class="contact-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="contact-detail">
+                        <p>EMAIL ADDRESS</p>
+                        <h5>@Model.Email</h5>
+                    </div>
+                </div>
+
+                <div class="contact-item">
+                    <div class="contact-icon green">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <div class="contact-detail">
+                        <p>MOBILE NUMBER</p>
+                        <h5>@(Model.Mobile ?? "Not specified")</h5>
+                    </div>
+                </div>
+
+                <div class="contact-item">
+                    <div class="contact-icon orange">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div class="contact-detail">
+                        <p>CURRENT ADDRESS</p>
+                        <h5>@(Model.Address ?? "Not specified")</h5>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dash-card">
+                <h3 class="card-title">Social Media</h3>
+                <p style="font-size: 13px; color: var(--text-light); font-style: italic;">No social links added</p>
+            </div>
         </div>
 
-        <!-- Sidebar / Stats -->
-        <div class="stats-card">
-            <h2 class="section-title">Learning Activity</h2>
-
-            <div style="display: flex; flex-direction: column; gap: 20px;">
-                <div style="padding: 20px; background: #eff6ff; border-radius: 12px; border: 1px solid #dbeafe;">
-                    <div
-                        style="font-size: 13px; font-weight: 700; color: #2563eb; margin-bottom: 5px; text-transform: uppercase;">
-                        Total Courses</div>
-                    <div style="font-size: 32px; font-weight: 800; color: #1e3a8a;">@(ViewBag.EnrolledCourses?.Count ??
-                        0)</div>
+        <!-- Right Content -->
+        <div class="main-content">
+            <div class="dash-card">
+                <h3 class="card-title" style="color: #1f2937">About Me</h3>
+                
+                <div class="form-group">
+                    <label class="form-label">Personal Biography</label>
+                    <textarea class="form-control" rows="4" placeholder="Tell your story. What are you passionate about learning?" readonly></textarea>
                 </div>
 
-                <div style="padding: 20px; background: #f0fdf4; border-radius: 12px; border: 1px solid #dcfce7;">
-                    <div
-                        style="font-size: 13px; font-weight: 700; color: #16a34a; margin-bottom: 5px; text-transform: uppercase;">
-                        Completed Quizzes</div>
-                    <div style="font-size: 32px; font-weight: 800; color: #14532d;">@(ViewBag.PassedQuizzes?.Count ?? 0)
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" class="form-control" value="@Model.Name" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Mobile Number</label>
+                        <input type="text" class="form-control" value="@Model.Mobile" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Current Location</label>
+                        <input type="text" class="form-control" value="@(Model.Address?.Split(',').FirstOrDefault() ?? "")" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Gender</label>
+                        <select class="form-control" disabled>
+                            <option selected>@(Model.Gender ?? "Not specified")</option>
+                        </select>
                     </div>
                 </div>
 
-                <div style="margin-top: 10px;">
-                    <h4 style="font-size: 14px; color: #1e293b; margin-bottom: 15px;">Quick Links</h4>
-                    <div style="display: flex; flex-direction: column; gap: 10px;">
-                        <a asp-controller="Home" asp-action="Contact"
-                            style="color: #2563eb; text-decoration: none; font-size: 14px; display: flex; align-items: center; gap: 8px; font-weight: 700;">
-                            <i class="fas fa-envelope"></i> Contact Admin
-                        </a>
-                        <a asp-controller="Home" asp-action="About"
-                            style="color: #475569; text-decoration: none; font-size: 14px; display: flex; align-items: center; gap: 8px;">
-                            <i class="fas fa-circle-question" style="color: #cbd5e1;"></i> Help & Support
-                        </a>
-                        <a asp-controller="Users" asp-action="Logout"
-                            style="color: #ef4444; text-decoration: none; font-size: 14px; display: flex; align-items: center; gap: 8px;">
-                            <i class="fas fa-right-from-bracket"></i> Sign Out
-                        </a>
+                <div class="form-group" style="margin-top: 20px;">
+                    <label class="form-label">Full Postal Address</label>
+                    <textarea class="form-control" rows="2" readonly>@(Model.Address ?? "")</textarea>
+                </div>
+
+                <div class="form-grid" style="margin-top: 20px;">
+                    <div class="form-group">
+                        <label class="form-label">Personal Website</label>
+                        <input type="text" class="form-control" placeholder="https://yourportfolio.com" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">LinkedIn URL</label>
+                        <input type="text" class="form-control" placeholder="https://linkedin.com/in/username" readonly />
+                    </div>
+                </div>
+            </div>
+
+            <div class="dash-card">
+                <h3 class="card-title" style="color: #1f2937">Other Social Profiles</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Twitter (Username)</label>
+                        <input type="text" class="form-control" placeholder="@@username" readonly />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">GitHub (Username)</label>
+                        <input type="text" class="form-control" placeholder="username" readonly />
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />

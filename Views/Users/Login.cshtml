@@ -1,4 +1,4 @@
-@model Project_BD.Models.User
+@model Project_BD.Models.RegisterViewModel
 
 @{
     ViewData["Title"] = "Authentication";
@@ -109,16 +109,48 @@
         padding: 12px 14px 12px 42px;
         background: white;
         border: 1px solid #e2e8f0;
-        border-radius: 12px;
+        border-radius: 6px;
         font-size: 15px;
         color: #1e293b;
         transition: all 0.2s;
     }
 
-    .form-control:focus {
+    .form-control-clean {
+        width: 100%;
+        padding: 12px 14px;
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        font-size: 15px;
+        color: #1e293b;
+        transition: all 0.2s;
+    }
+
+    .form-control-clean:focus {
         outline: none;
         border-color: #2563eb;
-        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+    
+    .text-center label {
+        text-align: center;
+        margin-bottom: 6px;
+        font-weight: 500;
+        color: #333;
+    }
+    
+    .text-danger {
+        color: #dc2626;
+        font-size: 12px;
+        margin-top: 4px;
+        display: block;
+        text-align: center;
     }
 
     .btn-auth {
@@ -202,35 +234,79 @@
         </form>
 
         <!-- Register Form -->
-        <form asp-action="Register" method="post" id="register-form" class="auth-form">
+        <form asp-action="Register" method="post" enctype="multipart/form-data" id="register-form" class="auth-form">
             @Html.AntiForgeryToken()
-            <div class="form-group">
-                <label>Full Name</label>
-                <div class="input-wrapper">
-                    <i class="fas fa-user"></i>
-                    <input asp-for="Name" class="form-control" placeholder="John Doe" required />
+            
+            <div class="error-msg" style="display: none;" id="validation-summary"></div>
+            
+            <div class="form-group text-center">
+                <label for="Name">Full Name</label>
+                <input name="Name" class="form-control-clean" required data-val="true" data-val-required="Full name is required" />
+                <span class="text-danger" data-valmsg-for="Name" data-valmsg-replace="true"></span>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group text-center">
+                    <label for="Mobile">Mobile Number</label>
+                    <input name="Mobile" type="tel" class="form-control-clean" required data-val="true" data-val-required="Mobile is required" data-val-phone="Invalid mobile number" />
+                    <span class="text-danger" data-valmsg-for="Mobile" data-valmsg-replace="true"></span>
+                </div>
+
+                <div class="form-group text-center">
+                    <label for="Gender">Gender</label>
+                    <select name="Gender" class="form-control-clean" required data-val="true" data-val-required="Gender is required">
+                        <option value="">Select gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <span class="text-danger" data-valmsg-for="Gender" data-valmsg-replace="true"></span>
                 </div>
             </div>
 
-            <div class="form-group">
-                <label>Email Address</label>
-                <div class="input-wrapper">
-                    <i class="fas fa-envelope"></i>
-                    <input asp-for="Email" class="form-control" placeholder="name@example.com" required />
+            <div class="form-group text-center">
+                <label for="Photo">Profile Picture</label>
+                <input name="Photo" type="file" class="form-control-clean" accept="image/*" />
+            </div>
+
+            <div class="form-group text-center">
+                <label for="Address">Address</label>
+                <textarea name="Address" class="form-control-clean" rows="3" required data-val="true" data-val-required="Address is required"></textarea>
+                <span class="text-danger" data-valmsg-for="Address" data-valmsg-replace="true"></span>
+            </div>
+
+            <div class="form-group text-center">
+                <label for="Email">Email Address</label>
+                <input name="Email" type="email" class="form-control-clean" required data-val="true" data-val-required="Email is required" data-val-email="Invalid email format" />
+                <span class="text-danger" data-valmsg-for="Email" data-valmsg-replace="true"></span>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group text-center">
+                    <label for="Password">Password</label>
+                    <input name="Password" type="password" id="Password" class="form-control-clean password-field" required data-val="true" data-val-required="Password is required" data-val-minlength="Password must be at least 6 characters" data-val-minlength-min="6" />
+                    <span class="text-danger" data-valmsg-for="Password" data-valmsg-replace="true"></span>
+                </div>
+
+                <div class="form-group text-center">
+                    <label for="ConfirmPassword">Confirm Password</label>
+                    <input name="ConfirmPassword" type="password" class="form-control-clean" required data-val="true" data-val-required="Confirm password is required" data-val-equalto="Passwords do not match" data-val-equalto-other="*.Password" />
+                    <span class="text-danger" data-valmsg-for="ConfirmPassword" data-valmsg-replace="true"></span>
                 </div>
             </div>
 
-            <div class="form-group">
-                <label>Create Password</label>
-                <div class="input-wrapper">
-                    <i class="fas fa-lock"></i>
-                    <input asp-for="Password" type="password" class="form-control" placeholder="••••••••" required />
-                </div>
+            <div class="form-group" style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 15px;">
+                <input type="checkbox" id="terms" required style="width: 16px; height: 16px; cursor: pointer;" />
+                <label for="terms" style="margin-bottom: 0; font-weight: 400; font-size: 15px; color: #333; cursor: pointer;">I agree to the Terms of Service and Privacy Policy</label>
             </div>
 
-            <button type="submit" class="btn-auth" style="background: #111827;">
-                Create Account <i class="fas fa-user-plus"></i>
+            <button type="submit" class="btn-auth" style="background: #1f2937; border-radius: 6px; margin-top: 20px;">
+                Create Account
             </button>
+            
+            <div style="text-align: center; margin-top: 16px; font-size: 15px; color: #475569;">
+                Already have an account? <a href="#" onclick="showForm('login', document.querySelectorAll('.auth-tab')[0]); return false;" style="color: #2563eb; text-decoration: none;">Login</a>
+            </div>
         </form>
     </div>
 </div>
@@ -258,11 +334,26 @@
         }
     }
 
-    // Check if we should show register form (e.g. redirected from register action)
+    // Check if we should show register form
     if (window.location.hash === '#register' || "@ViewBag.IsRegister" === "True") {
         const registerTab = document.querySelectorAll('.auth-tab')[1];
         showForm('register', registerTab);
     }
+
+    // Client-side password match validation (backup)
+    document.addEventListener('DOMContentLoaded', function () {
+        const password = document.querySelector('input[name="Password"]');
+        const confirmPassword = document.querySelector('input[name="ConfirmPassword"]');
+        if (confirmPassword) {
+            confirmPassword.addEventListener('input', function () {
+                if (this.value !== password.value) {
+                    this.setCustomValidity('Passwords do not match');
+                } else {
+                    this.setCustomValidity('');
+                }
+            });
+        }
+    });
 </script>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
